@@ -14,22 +14,30 @@
     <div class="col-md-4">
         <EditForm method="post" Model="Menu" OnValidSubmit="AddMenu" FormName="create" Enhance>
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
+            <ValidationSummary class="text-danger" role="alert" />
             <div class="mb-3">
-                <label for="title" class="form-label">Title:</label> 
-                <InputText id="title" @bind-Value="Menu.Title" class="form-control" /> 
-                <ValidationMessage For="() => Menu.Title" class="text-danger" /> 
-            </div>        
+                <label for="title" class="form-label">Title:</label>
+                <InputText id="title" @bind-Value="Menu.Title" class="form-control" />
+                <ValidationMessage For="() => Menu.Title" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="link" class="form-label">Link:</label> 
-                <InputText id="link" @bind-Value="Menu.Link" class="form-control" /> 
-                <ValidationMessage For="() => Menu.Link" class="text-danger" /> 
-            </div>        
+                <label for="link" class="form-label">Link:</label>
+                <InputText id="link" @bind-Value="Menu.Link" class="form-control" />
+                <ValidationMessage For="() => Menu.Link" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="type" class="form-label">Type:</label> 
-                <InputText id="type" @bind-Value="Menu.Type" class="form-control" /> 
-                <ValidationMessage For="() => Menu.Type" class="text-danger" /> 
-            </div>        
+                <label for="type" class="form-label">Type:</label>
+
+                <InputSelect @bind-Value="Menu.Type" class="form-control">
+                    <option value="Top">
+                        Top
+                    </option>
+                    <option value="Bottom">
+                        Bottom
+                    </option>
+                </InputSelect>
+                <ValidationMessage For="() => Menu.Type" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
