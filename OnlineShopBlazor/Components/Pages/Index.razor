@@ -342,21 +342,23 @@
     public List<Product> NewProducts { get; set; } = new List<Product>();
     public List<BestSellingFinal> BestSellingProducts { get; set; } = new List<BestSellingFinal>();
 
+    [Inject]
+    public OnlineShopContext context { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        using var dbContext = DbContextFactory.CreateDbContext();
 
-        var banners = await dbContext.Banners.ToListAsync();
+        var banners = await context.Banners.ToListAsync();
 
         Slides = banners.Where(x => x.Position == "slides").ToList();
         Banner1 = banners.Where(x => x.Position == "banner1").ToList();
         Banner2 = banners.Where(x => x.Position == "banner2").ToList();
 
-        NewProducts = await dbContext.Products
+        NewProducts = await context.Products
                                      .OrderByDescending(x => x.Id)
                                      .Take(8)
                                      .ToListAsync();
 
-        BestSellingProducts = await dbContext.BestSellingFinals.ToListAsync();
+        BestSellingProducts = await context.BestSellingFinals.ToListAsync();
     }
 }
