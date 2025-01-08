@@ -1,0 +1,41 @@
+﻿@page "/banners"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using OnlineShopBlazor.Models.Db
+@using OnlineShopBlazor.Models.Db
+@implements IAsyncDisposable
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="banners/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Banners">
+    <PropertyColumn Property="banner => banner.Title" />
+    <TemplateColumn Context="banner" Title="Image">
+        <img src="/images/banners/@banner.ImageName" alt="@banner.Title" style="max-width: 100px; max-height: 100px;" />
+    </TemplateColumn>
+    <PropertyColumn Property="banner => banner.Priority" />
+    <PropertyColumn Property="banner => banner.Position" />
+
+    <TemplateColumn Context="banner">
+        <a href="@($"banners/edit?id={banner.Id}")">Edit</a> |
+        <a href="@($"banners/details?id={banner.Id}")">Details</a> |
+        <a href="@($"banners/delete?id={banner.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private OnlineShopContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

@@ -1,0 +1,110 @@
+﻿@page "/banners/create"
+@using Microsoft.EntityFrameworkCore
+@using OnlineShopBlazor.Models.Db
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+@inject NavigationManager NavigationManager
+@inject IWebHostEnvironment WebHostEnvironment
+@using System.IO
+@rendermode InteractiveServer
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Banner</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Banner" OnValidSubmit="AddBanner" FormName="create">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <InputTextArea id="title" @bind-Value="Banner.Title" class="form-control" />
+                <ValidationMessage For="() => Banner.Title" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <InputTextArea id="description" @bind-Value="Banner.Description" class="form-control" />
+                <ValidationMessage For="() => Banner.Description" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Image:</label>
+
+                <InputFile OnChange="LoadFiles" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label for="priority" class="form-label">Priority:</label>
+                <InputNumber id="priority" @bind-Value="Banner.Priority" class="form-control" />
+                <ValidationMessage For="() => Banner.Priority" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="link" class="form-label">Link:</label>
+                <InputText id="link" @bind-Value="Banner.Link" class="form-control" />
+                <ValidationMessage For="() => Banner.Link" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="position" class="form-label">Position:</label>
+                <InputSelect @bind-Value="Banner.Position" class="form-control">
+                    <option value="slider">
+                        slider
+                    </option>
+                    <option value="banner1">
+                        banner1
+                    </option>
+                    <option value="banner2">
+                        banner2
+                    </option>
+                </InputSelect>
+                <ValidationMessage For="() => Banner.Position" class="text-danger" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+
+    </div>
+</div>
+
+<div>
+    <a href="/banners">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Banner Banner { get; set; } = new();
+    private IBrowserFile? UploadedFile { get; set; }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        UploadedFile = e.File;
+    }
+
+    private async Task AddBanner()
+    {
+
+        var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
+        Directory.CreateDirectory(uploadPath);
+
+        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(UploadedFile.Name)}";
+        var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+        const long maxFileSize = 5 * 1024 * 1024; // 5 MB
+
+        await using var fileStream = new FileStream(filePath, FileMode.Create);
+        await UploadedFile.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
+
+        Banner.ImageName = uniqueFileName; // Save file name
+
+        using var context = DbFactory.CreateDbContext();
+        context.Banners.Add(Banner);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/banners");
+    }
+}
