@@ -89,18 +89,21 @@
     private async Task AddBanner()
     {
 
-        var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
-        
+        if (UploadedFile != null)
+        {
+            var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
 
-        var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(UploadedFile.Name);
-        var filePath = Path.Combine(uploadPath, uniqueFileName);
 
-        const long maxFileSize = 5 * 1024 * 1024; // 5 MB
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(UploadedFile.Name);
+            var filePath = Path.Combine(uploadPath, uniqueFileName);
 
-        await using var fileStream = new FileStream(filePath, FileMode.Create);
-        await UploadedFile.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
+            const long maxFileSize = 5 * 1024 * 1024; // 5 MB
 
-        Banner.ImageName = uniqueFileName; // Save file name
+            await using var fileStream = new FileStream(filePath, FileMode.Create);
+            await UploadedFile.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
+
+            Banner.ImageName = uniqueFileName; // Save file name
+        }
 
         using var context = DbFactory.CreateDbContext();
         context.Banners.Add(Banner);
