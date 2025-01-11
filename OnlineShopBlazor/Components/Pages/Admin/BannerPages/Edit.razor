@@ -109,7 +109,7 @@
 
 
             var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
-            Directory.CreateDirectory(uploadPath);
+           
 
             var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(UploadedFile.Name);
             var filePath = Path.Combine(uploadPath, uniqueFileName);
