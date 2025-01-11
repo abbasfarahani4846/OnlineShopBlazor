@@ -92,7 +92,7 @@
         var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
         Directory.CreateDirectory(uploadPath);
 
-        var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(UploadedFile.Name)}";
+        var uniqueFileName =Guid.NewGuid()+Path.GetExtension(UploadedFile.Name);
         var filePath = Path.Combine(uploadPath, uniqueFileName);
 
         const long maxFileSize = 5 * 1024 * 1024; // 5 MB
