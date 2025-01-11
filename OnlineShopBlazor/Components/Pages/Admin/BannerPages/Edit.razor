@@ -14,57 +14,57 @@
 <h2>Banner</h2>
 <hr />
 
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Banner" OnValidSubmit="UpdateBanner" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert" />
-                <input type="hidden" name="Banner.Id" value="@Banner.Id" />
-                <input type="hidden" name="Banner.ImageName" value="@Banner.ImageName" />
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title:</label>
-                    <InputTextArea id="title" @bind-Value="Banner.Title" class="form-control" />
-                    <ValidationMessage For="() => Banner.Title" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <InputTextArea id="description" @bind-Value="Banner.Description" class="form-control" />
-                    <ValidationMessage For="() => Banner.Description" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                  
-                    <img src="/images/banners/@Banner.ImageName" class="img-thumbnail" style="max-width:150px" />
-                    <InputFile OnChange="LoadFiles" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label for="priority" class="form-label">Priority:</label>
-                    <InputNumber id="priority" @bind-Value="Banner.Priority" class="form-control" />
-                    <ValidationMessage For="() => Banner.Priority" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="link" class="form-label">Link:</label>
-                    <InputText id="link" @bind-Value="Banner.Link" class="form-control" />
-                    <ValidationMessage For="() => Banner.Link" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="position" class="form-label">Position:</label>
-                    <InputSelect @bind-Value="Banner.Position" class="form-control">
-                        <option value="slider" selected="@((Banner.Position == "slider") ? "selected" : null)">
-                            slider
-                        </option>
-                        <option value="banner1" selected="@((Banner.Position == "banner1") ? "selected" : null)">
-                            banner1
-                        </option>
-                        <option value="banner2" selected="@((Banner.Position == "banner2") ? "selected" : null)">
-                            banner2
-                        </option>
-                    </InputSelect>
-                    <ValidationMessage For="() => Banner.Position" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
-        </div>
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Banner" OnValidSubmit="UpdateBanner" FormName="edit" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary role="alert" />
+            <input type="hidden" name="Banner.Id" value="@Banner.Id" />
+            <input type="hidden" name="Banner.ImageName" value="@Banner.ImageName" />
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <InputTextArea id="title" @bind-Value="Banner.Title" class="form-control" />
+                <ValidationMessage For="() => Banner.Title" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <InputTextArea id="description" @bind-Value="Banner.Description" class="form-control" />
+                <ValidationMessage For="() => Banner.Description" class="text-danger" />
+            </div>
+            <div class="mb-3">
+
+                <img src="/images/banners/@Banner.ImageName" class="img-thumbnail" style="max-width:150px" />
+                <InputFile OnChange="LoadFiles" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label for="priority" class="form-label">Priority:</label>
+                <InputNumber id="priority" @bind-Value="Banner.Priority" class="form-control" />
+                <ValidationMessage For="() => Banner.Priority" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="link" class="form-label">Link:</label>
+                <InputText id="link" @bind-Value="Banner.Link" class="form-control" />
+                <ValidationMessage For="() => Banner.Link" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="position" class="form-label">Position:</label>
+                <InputSelect @bind-Value="Banner.Position" class="form-control">
+                    <option value="slider" selected="@((Banner.Position == "slider") ? "selected" : null)">
+                        slider
+                    </option>
+                    <option value="banner1" selected="@((Banner.Position == "banner1") ? "selected" : null)">
+                        banner1
+                    </option>
+                    <option value="banner2" selected="@((Banner.Position == "banner2") ? "selected" : null)">
+                        banner2
+                    </option>
+                </InputSelect>
+                <ValidationMessage For="() => Banner.Position" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </EditForm>
     </div>
+</div>
 
 
 <div>
@@ -111,7 +111,7 @@
             var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
             Directory.CreateDirectory(uploadPath);
 
-            var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(UploadedFile.Name)}";
+            var uniqueFileName = Guid.NewGuid() + Path.GetExtension(UploadedFile.Name);
             var filePath = Path.Combine(uploadPath, uniqueFileName);
 
             const long maxFileSize = 5 * 1024 * 1024; // 5 MB
