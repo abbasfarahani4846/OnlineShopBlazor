@@ -13,12 +13,7 @@
 
 <h2>Banner</h2>
 <hr />
-@if (Banner is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
+
     <div class="row">
         <div class="col-md-4">
             <EditForm method="post" Model="Banner" OnValidSubmit="UpdateBanner" FormName="edit" Enhance>
@@ -70,7 +65,7 @@ else
             </EditForm>
         </div>
     </div>
-}
+
 
 <div>
     <a href="/banners">Back to List</a>
