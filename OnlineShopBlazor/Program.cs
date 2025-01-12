@@ -1,6 +1,8 @@
 ﻿using OnlineShopBlazor.Components;
 using Microsoft.EntityFrameworkCore;
 using OnlineShopBlazor.Models.Db;
+using FluentValidation;
+using OnlineShopBlazor.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContextFactory<OnlineShopContext>();
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
+
 
 var app = builder.Build();
 

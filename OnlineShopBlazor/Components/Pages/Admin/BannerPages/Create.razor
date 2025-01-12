@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject IWebHostEnvironment WebHostEnvironment
 @using System.IO
+@using OnlineShopBlazor.Validators
 @rendermode InteractiveServer
 
 <PageTitle>Create</PageTitle>
@@ -16,14 +17,25 @@
 
 <div class="row">
     <div class="col-md-4">
-        <EditForm method="post" Model="Banner" OnValidSubmit="AddBanner" FormName="create">
+        <EditForm method="post" Model="Banner" OnValidSubmit="AddBanner" FormName="create" OnInvalidSubmit="HandleInvalidSubmit">
+            <ValidationSummary class="text-danger" />
+
+            @foreach (var error in ValidationMessages)
+            {
+                <div class="text-danger">@error.Value</div>
+            }
+
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
 
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>
                 <InputTextArea id="title" @bind-Value="Banner.Title" class="form-control" />
-                <ValidationMessage For="() => Banner.Title" class="text-danger" />
+              
+                @if (ValidationMessages.ContainsKey(nameof(Banner.Title)))
+                {
+                    <div class="text-danger">@ValidationMessages[nameof(Banner.Title)]</div>
+                }
             </div>
 
             <div class="mb-3">
@@ -78,16 +90,34 @@
 
 @code {
     [SupplyParameterFromForm]
-    private Banner Banner { get; set; } = new();
+    private Banner Banner { get; set; } = new Banner();
     private IBrowserFile? UploadedFile { get; set; }
+    private Dictionary<string, string> ValidationMessages { get; set; } = new();
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         UploadedFile = e.File;
     }
+    private void HandleInvalidSubmit()
+    {
+        Console.WriteLine("Form has validation errors.");
+    }
 
     private async Task AddBanner()
     {
+
+        var validator = new BannerValidator();
+        var validationResult = validator.Validate(Banner);
+
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                ValidationMessages[error.PropertyName] = error.ErrorMessage;
+            }
+            return;
+        }
+
 
         if (UploadedFile != null)
         {

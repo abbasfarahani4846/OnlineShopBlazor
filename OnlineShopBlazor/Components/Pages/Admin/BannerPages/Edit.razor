@@ -16,9 +16,11 @@
 
 <div class="row">
     <div class="col-md-4">
-        <EditForm method="post" Model="Banner" OnValidSubmit="UpdateBanner" FormName="edit" Enhance>
+        <EditForm method="post" Model="Banner" OnValidSubmit="UpdateBanner" FormName="edit">
+             <ObjectGraphDataAnnotationsValidator />
             <DataAnnotationsValidator />
             <ValidationSummary role="alert" />
+
             <input type="hidden" name="Banner.Id" value="@Banner.Id" />
             <input type="hidden" name="Banner.ImageName" value="@Banner.ImageName" />
 
@@ -77,7 +79,7 @@
     private int Id { get; set; }
 
     [SupplyParameterFromForm]
-    private Banner? Banner { get; set; }
+    private Banner? Banner { get; set; } = new Banner();
     private IBrowserFile? UploadedFile { get; set; }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
@@ -88,13 +90,15 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        Banner ??= await context.Banners.FirstOrDefaultAsync(m => m.Id == Id);
+        Banner = await context.Banners.FirstOrDefaultAsync(m => m.Id == Id);
 
         if (Banner is null)
         {
             NavigationManager.NavigateTo("notfound");
+            return; // Prevent further execution if the banner is not found
         }
     }
+
 
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
