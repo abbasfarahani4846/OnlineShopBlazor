@@ -42,7 +42,8 @@ https://github.com/Blazored/FluentValidation
 
             <div class="mb-3">
                 <label for="image" class="form-label">Image:</label>
-                <InputFile OnChange="LoadFiles" class="form-control" />
+                <InputFile Onchange="LoadFiles" class="form-control" />
+                <ValidationMessage For="() => Banner.ImageName" class="text-danger" />
             </div>
 
             <div class="mb-3">
@@ -83,35 +84,15 @@ https://github.com/Blazored/FluentValidation
 
     private FluentValidationValidator? _fluentValidationValidator;
 
-    private async Task LoadFiles(InputFileChangeEventArgs e)
+    private void LoadFiles(InputFileChangeEventArgs e)
     {
-        const long maxFileSize = 5 * 1024 * 1024; // 5 MB
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-
         UploadedFile = e.File;
-
-        if (UploadedFile != null)
-        {
-            if (UploadedFile.Size > maxFileSize)
-            {
-                Console.WriteLine("File size exceeds the limit of 5 MB.");
-                UploadedFile = null;
-                return;
-            }
-
-            var fileExtension = Path.GetExtension(UploadedFile.Name).ToLower();
-            if (!allowedExtensions.Contains(fileExtension))
-            {
-                Console.WriteLine("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.");
-                UploadedFile = null;
-                return;
-            }
-        }
     }
 
-    private async Task AddBanner(EditContext editContext)
+    private async Task AddBanner()
     {
-        if (await _fluentValidationValidator!.ValidateAsync())
+        bool isValid = await _fluentValidationValidator!.ValidateAsync();
+        if (isValid)
         {
             if (UploadedFile != null)
             {
@@ -128,17 +109,12 @@ https://github.com/Blazored/FluentValidation
                 Banner.ImageName = uniqueFileName; // Save file name
             }
 
-            try
-            {
-                using var context = DbFactory.CreateDbContext();
-                context.Banners.Add(Banner);
-                await context.SaveChangesAsync();
-                NavigationManager.NavigateTo("/banners");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while saving the banner: {ex.Message}");
-            }
+
+            using var context = DbFactory.CreateDbContext();
+            context.Banners.Add(Banner);
+            await context.SaveChangesAsync();
+            NavigationManager.NavigateTo("/banners");
+
         }
     }
 }

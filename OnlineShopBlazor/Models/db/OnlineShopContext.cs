@@ -49,24 +49,167 @@ public partial class OnlineShopContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Banner>(entity =>
+        {
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Link).HasMaxLength(100);
+            entity.Property(e => e.Position).HasMaxLength(50);
+            entity.Property(e => e.Title).HasMaxLength(200);
+        });
+
         modelBuilder.Entity<BestSellingFinal>(entity =>
         {
-            entity.ToView("BestSellingFinal");
+            entity
+                .HasNoKey()
+                .ToView("BestSellingFinal");
+
+            entity.Property(e => e.Discount).HasColumnType("money");
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Title)
+                .HasMaxLength(500)
+                .HasColumnName("TItle");
         });
 
         modelBuilder.Entity<BestSellingProduct>(entity =>
         {
-            entity.ToView("BestSellingProducts");
+            entity
+                .HasNoKey()
+                .ToView("BestSellingProducts");
+
+            entity.Property(e => e.Discount).HasColumnType("money");
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Title)
+                .HasMaxLength(500)
+                .HasColumnName("TItle");
+        });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.ToTable("Comment");
+
+            entity.Property(e => e.CommentText).HasMaxLength(1000);
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Coupon>(entity =>
+        {
+            entity.ToTable("Coupon");
+
+            entity.Property(e => e.Code).HasMaxLength(50);
+            entity.Property(e => e.Discount).HasColumnType("money");
+        });
+
+        modelBuilder.Entity<Menu>(entity =>
+        {
+            entity.ToTable("Menu");
+
+            entity.Property(e => e.Link).HasMaxLength(200);
+            entity.Property(e => e.Title).HasMaxLength(100);
+            entity.Property(e => e.Type).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.ToTable("Order");
+
+            entity.Property(e => e.Address).HasMaxLength(200);
+            entity.Property(e => e.City).HasMaxLength(50);
+            entity.Property(e => e.Comment).HasMaxLength(200);
+            entity.Property(e => e.CompanyName).HasMaxLength(50);
+            entity.Property(e => e.Country).HasMaxLength(50);
+            entity.Property(e => e.CouponCode).HasMaxLength(50);
+            entity.Property(e => e.CouponDiscount).HasColumnType("money");
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.FirstName).HasMaxLength(50);
+            entity.Property(e => e.LastName).HasMaxLength(50);
+            entity.Property(e => e.Phone).HasMaxLength(50);
+            entity.Property(e => e.Shipping).HasColumnType("money");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.SubTotal).HasColumnType("money");
+            entity.Property(e => e.Total).HasColumnType("money");
+            entity.Property(e => e.TransId).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<OrderDetail>(entity =>
+        {
+            entity.Property(e => e.ProductPrice).HasColumnType("money");
+            entity.Property(e => e.ProductTitle).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.Property(e => e.Category).HasMaxLength(100);
+            entity.Property(e => e.Discount).HasColumnType("money");
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.Title)
+                .HasMaxLength(500)
+                .HasColumnName("TItle");
+        });
+
+        modelBuilder.Entity<ProductGalery>(entity =>
+        {
+            entity.ToTable("ProductGalery");
+
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Setting>(entity =>
+        {
+            entity.Property(e => e.Address).HasMaxLength(500);
+            entity.Property(e => e.CopyRight).HasMaxLength(100);
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.FaceBook).HasMaxLength(100);
+            entity.Property(e => e.GooglePlus).HasMaxLength(100);
+            entity.Property(e => e.Instagram).HasMaxLength(100);
+            entity.Property(e => e.Logo).HasMaxLength(50);
+            entity.Property(e => e.Phone).HasMaxLength(50);
+            entity.Property(e => e.Shipping).HasColumnType("money");
+            entity.Property(e => e.Title).HasMaxLength(100);
+            entity.Property(e => e.Twitter).HasMaxLength(100);
+            entity.Property(e => e.Youtube).HasMaxLength(100);
         });
 
         modelBuilder.Entity<Test>(entity =>
         {
+            entity.ToTable("Test");
+
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Count).HasColumnName("count");
+            entity.Property(e => e.Title)
+                .HasMaxLength(50)
+                .HasColumnName("title");
         });
 
         modelBuilder.Entity<Testview>(entity =>
         {
-            entity.ToView("testview");
+            entity
+                .HasNoKey()
+                .ToView("testview");
+
+            entity.Property(e => e.Discount).HasColumnType("money");
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Title)
+                .HasMaxLength(500)
+                .HasColumnName("TItle");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.FullName).HasMaxLength(50);
+            entity.Property(e => e.Password).HasMaxLength(50);
+            entity.Property(e => e.RegisterDate).HasColumnType("datetime");
         });
 
         OnModelCreatingPartial(modelBuilder);
