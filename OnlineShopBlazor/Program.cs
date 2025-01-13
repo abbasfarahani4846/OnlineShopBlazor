@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineShopBlazor.Models.Db;
 using FluentValidation;
-using OnlineShopBlazor.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 

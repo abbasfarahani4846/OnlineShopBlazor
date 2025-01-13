@@ -1,11 +1,12 @@
 ﻿@page "/banners/create"
 @using Microsoft.EntityFrameworkCore
 @using OnlineShopBlazor.Models.Db
+@using System.ComponentModel.DataAnnotations;
 @inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
 @inject NavigationManager NavigationManager
 @inject IWebHostEnvironment WebHostEnvironment
 @using System.IO
-@using OnlineShopBlazor.Validators
+@using Blazored.FluentValidation
 @rendermode InteractiveServer
 
 <PageTitle>Create</PageTitle>
@@ -15,12 +16,17 @@
 <h2>Banner</h2>
 <hr />
 
+@*
+
+https://github.com/Blazored/FluentValidation
+*@
+
 <div class="row">
     <div class="col-md-4">
-        <EditForm method="post" Model="Banner" OnValidSubmit="AddBanner" FormName="create">
+        <EditForm Model="Banner" OnValidSubmit="AddBanner" FormName="create">
 
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
+            <FluentValidationValidator @ref="_fluentValidationValidator" />
+            <ValidationSummary />
 
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>
@@ -36,7 +42,6 @@
 
             <div class="mb-3">
                 <label for="image" class="form-label">Image:</label>
-
                 <InputFile OnChange="LoadFiles" class="form-control" />
             </div>
 
@@ -55,22 +60,15 @@
             <div class="mb-3">
                 <label for="position" class="form-label">Position:</label>
                 <InputSelect @bind-Value="Banner.Position" class="form-control">
-                    <option value="slider">
-                        slider
-                    </option>
-                    <option value="banner1">
-                        banner1
-                    </option>
-                    <option value="banner2">
-                        banner2
-                    </option>
+                    <option value="slider">slider</option>
+                    <option value="banner1">banner1</option>
+                    <option value="banner2">banner2</option>
                 </InputSelect>
                 <ValidationMessage For="() => Banner.Position" class="text-danger" />
             </div>
 
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
-
     </div>
 </div>
 
@@ -83,33 +81,64 @@
     private Banner Banner { get; set; } = new Banner();
     private IBrowserFile? UploadedFile { get; set; }
 
+    private FluentValidationValidator? _fluentValidationValidator;
+
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
-        UploadedFile = e.File;
-    }
+        const long maxFileSize = 5 * 1024 * 1024; // 5 MB
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
 
-    private async Task AddBanner()
-    {
+        UploadedFile = e.File;
 
         if (UploadedFile != null)
         {
-            var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
+            if (UploadedFile.Size > maxFileSize)
+            {
+                Console.WriteLine("File size exceeds the limit of 5 MB.");
+                UploadedFile = null;
+                return;
+            }
 
-
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(UploadedFile.Name);
-            var filePath = Path.Combine(uploadPath, uniqueFileName);
-
-            const long maxFileSize = 5 * 1024 * 1024; // 5 MB
-
-            await using var fileStream = new FileStream(filePath, FileMode.Create);
-            await UploadedFile.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
-
-            Banner.ImageName = uniqueFileName; // Save file name
+            var fileExtension = Path.GetExtension(UploadedFile.Name).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                Console.WriteLine("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.");
+                UploadedFile = null;
+                return;
+            }
         }
+    }
 
-        using var context = DbFactory.CreateDbContext();
-        context.Banners.Add(Banner);
-        await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/banners");
+    private async Task AddBanner(EditContext editContext)
+    {
+        if (await _fluentValidationValidator!.ValidateAsync())
+        {
+            if (UploadedFile != null)
+            {
+                var uploadPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "banners");
+
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(UploadedFile.Name);
+                var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+                const long maxFileSize = 5 * 1024 * 1024; // 5 MB
+
+                await using var fileStream = new FileStream(filePath, FileMode.Create);
+                await UploadedFile.OpenReadStream(maxFileSize).CopyToAsync(fileStream);
+
+                Banner.ImageName = uniqueFileName; // Save file name
+            }
+
+            try
+            {
+                using var context = DbFactory.CreateDbContext();
+                context.Banners.Add(Banner);
+                await context.SaveChangesAsync();
+                NavigationManager.NavigateTo("/banners");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while saving the banner: {ex.Message}");
+            }
+        }
     }
 }
