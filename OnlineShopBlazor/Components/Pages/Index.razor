@@ -348,9 +348,9 @@
 
         var banners = await dbContext.Banners.ToListAsync();
 
-        Slides = banners.Where(x => x.Position == "slides").ToList();
-        Banner1 = banners.Where(x => x.Position == "banner1").ToList();
-        Banner2 = banners.Where(x => x.Position == "banner2").ToList();
+        Slides = banners.Where(x => x.Position == "slides").OrderBy(x=>x.Priority).ToList();
+        Banner1 = banners.Where(x => x.Position == "banner1").OrderBy(x => x.Priority).ToList();
+        Banner2 = banners.Where(x => x.Position == "banner2").OrderBy(x => x.Priority).ToList();
 
         NewProducts = await dbContext.Products
                                      .OrderByDescending(x => x.Id)
