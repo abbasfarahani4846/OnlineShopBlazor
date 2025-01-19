@@ -33,7 +33,7 @@ public partial class OnlineShopContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<ProductGalery> ProductGaleries { get; set; }
+    public virtual DbSet<ProductGallery> ProductGalleries { get; set; }
 
     public virtual DbSet<Setting> Settings { get; set; }
 
@@ -146,18 +146,20 @@ public partial class OnlineShopContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.Property(e => e.Category).HasMaxLength(100);
             entity.Property(e => e.Discount).HasColumnType("money");
             entity.Property(e => e.ImageName).HasMaxLength(50);
             entity.Property(e => e.Price).HasColumnType("money");
             entity.Property(e => e.Title)
                 .HasMaxLength(500)
                 .HasColumnName("TItle");
+            entity.Property(e => e.VideoUrl).HasMaxLength(200);
         });
 
-        modelBuilder.Entity<ProductGalery>(entity =>
+        modelBuilder.Entity<ProductGallery>(entity =>
         {
-            entity.ToTable("ProductGalery");
+            entity.HasKey(e => e.Id).HasName("PK_ProductGalery");
+
+            entity.ToTable("ProductGallery");
 
             entity.Property(e => e.ImageName).HasMaxLength(50);
         });

@@ -1,0 +1,165 @@
+﻿@page "/products/edit"
+@using Microsoft.EntityFrameworkCore
+@using OnlineShopBlazor.Models.Db
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Product</h2>
+<hr />
+@if (Product is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Product" OnValidSubmit="UpdateProduct" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Product.Id" value="@Product.Id" />
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title:</label>
+                    <InputText id="title" @bind-Value="Product.Title" class="form-control" />
+                    <ValidationMessage For="() => Product.Title" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText id="description" @bind-Value="Product.Description" class="form-control" />
+                    <ValidationMessage For="() => Product.Description" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="text" class="form-label">Text:</label>
+                    <InputText id="text" @bind-Value="Product.Text" class="form-control" />
+                    <ValidationMessage For="() => Product.Text" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price:</label>
+                    <InputNumber id="price" @bind-Value="Product.Price" class="form-control" />
+                    <ValidationMessage For="() => Product.Price" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="discount" class="form-label">Discount:</label>
+                    <InputNumber id="discount" @bind-Value="Product.Discount" class="form-control" />
+                    <ValidationMessage For="() => Product.Discount" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="imagename" class="form-label">ImageName:</label>
+                    <InputText id="imagename" @bind-Value="Product.ImageName" class="form-control" />
+                    <ValidationMessage For="() => Product.ImageName" class="text-danger" />
+                </div>
+
+                <!-- Product Gallery Section -->
+                <div class="col-md-8">
+                    <h3>Product Gallery</h3>
+                    <div class="row">
+                        @foreach (var gallery in Galleries)
+                        {
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <img src="/images/products/@gallery.ImageName" class="card-img-top" alt="Gallery Image">
+                                    <div class="card-body">
+                                        <a class="btn btn-danger btn-sm" @onclick="() => DeleteGalleryImage(gallery.Id)">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="qty" class="form-label">Qty:</label>
+                    <InputNumber id="qty" @bind-Value="Product.Qty" class="form-control" />
+                    <ValidationMessage For="() => Product.Qty" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="tags" class="form-label">Tags:</label>
+                    <InputText id="tags" @bind-Value="Product.Tags" class="form-control" />
+                    <ValidationMessage For="() => Product.Tags" class="text-danger" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+
+           
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/products">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Product? Product { get; set; }
+    public List<ProductGallery> Galleries { get; set; } = new();
+
+
+    // Method to delete a gallery image
+    private async Task DeleteGalleryImage(int galleryId)
+    {
+        using var context = DbFactory.CreateDbContext();
+        var gallery = await context.ProductGalleries.FirstOrDefaultAsync(x => x.Id == galleryId);
+
+        if (gallery != null)
+        {
+            context.ProductGalleries.Remove(gallery);
+            await context.SaveChangesAsync();
+
+            // Refresh the gallery list
+            Galleries = context.ProductGalleries.Where(x => x.ProductId == Product!.Id).ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Product ??= await context.Products.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Product is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+        Galleries = context.ProductGalleries.Where(x => x.ProductId == Product.Id).ToList();
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateProduct()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Product!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ProductExists(Product!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/products");
+    }
+
+    private bool ProductExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Products.Any(e => e.Id == id);
+    }
+}

@@ -23,5 +23,5 @@ public partial class Product
 
     public string? Tags { get; set; }
 
-    public string? Category { get; set; }
+    public string? VideoUrl { get; set; }
 }

@@ -1,0 +1,60 @@
+﻿@page "/products/details"
+@using Microsoft.EntityFrameworkCore
+@using OnlineShopBlazor.Models.Db
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Product</h2>
+    <hr />
+    @if (product is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Title</dt>
+            <dd class="col-sm-10">@product.Title</dd>
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@product.Description</dd>
+            <dt class="col-sm-2">Text</dt>
+            <dd class="col-sm-10">@product.Text</dd>
+            <dt class="col-sm-2">Price</dt>
+            <dd class="col-sm-10">@product.Price</dd>
+            <dt class="col-sm-2">Discount</dt>
+            <dd class="col-sm-10">@product.Discount</dd>
+            <dt class="col-sm-2">ImageName</dt>
+            <dd class="col-sm-10">@product.ImageName</dd>
+            <dt class="col-sm-2">Qty</dt>
+            <dd class="col-sm-10">@product.Qty</dd>
+            <dt class="col-sm-2">Tags</dt>
+            <dd class="col-sm-10">@product.Tags</dd>
+        </dl>
+        <div>
+            <a href="@($"/products/edit?id={product.Id}")">Edit</a> |
+            <a href="@($"/products")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Product? product;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        product = await context.Products.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (product is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
