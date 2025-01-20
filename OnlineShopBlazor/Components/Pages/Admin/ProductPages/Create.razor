@@ -45,7 +45,7 @@
             <div class="mb-3">
                 <label for="imagename" class="form-label">ImageName:</label>
                 <InputFile Onchange="LoadMainImageFiles" class="form-control" />
-                <ValidationMessage For="() => Product.ImageName" class="text-danger" />
+
             </div>
             <div class="mb-3">
                 <label for="Gallery" class="form-label">Gallery:</label>
@@ -116,7 +116,6 @@
         await context.SaveChangesAsync();
 
 
-        List<ProductGallery> galleries = new List<ProductGallery>();
         if (GalleryFiles != null)
         {
 
@@ -134,10 +133,9 @@
                 galleryItem.ImageName = uniqueFileName;
                 galleryItem.ProductId = Product.Id;
 
-                galleries.Add(galleryItem);
+                context.ProductGalleries.Add(galleryItem);
             }
 
-            context.ProductGalleries.AddRange(galleries);
             await context.SaveChangesAsync();
         }
 
