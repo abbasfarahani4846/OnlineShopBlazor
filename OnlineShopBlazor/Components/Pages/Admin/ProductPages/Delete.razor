@@ -84,6 +84,20 @@
 
         using var context = DbFactory.CreateDbContext();
         context.Products.Remove(product!);
+
+        var galleries = await context.ProductGalleries.Where(x => x.ProductId == product.Id).ToListAsync();
+
+        foreach (var item in galleries)
+        {
+
+            if (System.IO.File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\images\\products\\" + item.ImageName))
+            {
+                System.IO.File.Delete(Directory.GetCurrentDirectory() + "\\wwwroot\\images\\products\\" + item.ImageName);
+            }
+
+            context.ProductGalleries.Remove(item);
+        }
+
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/products");
     }

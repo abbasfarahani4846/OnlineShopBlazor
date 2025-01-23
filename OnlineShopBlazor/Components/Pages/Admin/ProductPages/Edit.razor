@@ -54,7 +54,7 @@ else
                     <InputFile Onchange="LoadMainImageFiles" class="form-control" />
                     <br />
                     <img src="/images/products/@Product.ImageName" class="img-thumbnail" alt="Gallery Image">
-                    <ValidationMessage For="() => Product.ImageName" class="text-danger" />
+
                 </div>
                 <div class="mb-3">
                     <label for="Gallery" class="form-label">Gallery:</label>
@@ -139,7 +139,7 @@ else
             await context.SaveChangesAsync();
 
             // Refresh the gallery list
-            Galleries = context.ProductGalleries.Where(x => x.ProductId == Product!.Id).ToList();
+            Galleries = context.ProductGalleries.Where(x => x.ProductId == Product.Id).ToList();
         }
     }
 
