@@ -13,6 +13,7 @@ builder.Services.AddDbContextFactory<OnlineShopContext>();
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
+builder.Services.AddWMBSC();
 
 var app = builder.Build();
 

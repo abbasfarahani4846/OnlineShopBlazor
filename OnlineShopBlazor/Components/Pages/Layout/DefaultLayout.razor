@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject IDbContextFactory<OnlineShopContext> DbContextFactory
+@inject NavigationManager NavigationManager
 
 
 <!--offcanvas menu area start-->
@@ -94,7 +95,7 @@
                         </div>
                         <div class="header_account">
                             <ul class="d-flex">
-                                <li class="header_search"><a href="#"><i class="icon-magnifier icons"></i></a></li>
+                                <li class="header_search"><a><i class="icon-magnifier icons"></i></a></li>
                                 @*  <li class="account_link">
                                     <a href="#"><i class="icon-user icons @(User.Identity.IsAuthenticated?"text-danger":"")"></i></a>
                                     <ul class="dropdown_account_link">
@@ -130,10 +131,9 @@
         <div class="search_close">
             <i class="ion-close-round"></i>
         </div>
-        <form class="border-bottom" action="/product/SearchProducts">
-            <input class="border-0" placeholder="Search products..." type="text" name="searchText">
-            <button type="submit"><span class="icon-magnifier icons"></span></button>
-        </form>
+
+
+        <OnlineShopBlazor.Components.Pages.Common.SearchComponent />
     </div>
 
 </header>
@@ -224,18 +224,6 @@
 <!--footer area end-->
 
 
-<script>
-
-    $(document).ready(function () {
-
-    $(".slick-slide").click(function () {
-    $(".slick-track").css("transform", "");
-    });
-
-    });
-
-</script>
-
 @code {
     private Models.Db.Setting Setting { get; set; } = new();
     public List<Menu> TopMenu { get; set; } = new List<Menu>();
@@ -249,4 +237,5 @@
         TopMenu = await dbContext.Menus.Where(x => x.Type == "Top").ToListAsync();
         BottomMenu = await dbContext.Menus.Where(x => x.Type == "Bottom").ToListAsync();
     }
+
 }

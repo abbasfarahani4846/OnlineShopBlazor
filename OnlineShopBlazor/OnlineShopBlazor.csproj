@@ -26,10 +26,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="WMBlazorSlickCarousel" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\Validations\" />
+    <Folder Include="Models\ViewModels\" />
     <Folder Include="wwwroot\images\banners\" />
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>

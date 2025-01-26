@@ -25,6 +25,7 @@
     <script src="/assets/js/vendor/modernizr-3.7.1.min.js"></script>
 
     <link rel="stylesheet" href="OnlineShopBlazor.styles.css" />
+
     <HeadOutlet />
 </head>
 
@@ -53,6 +54,24 @@
 
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script>
+
+    <script>
+       function generateSlider() {
+            var $sliderActivation = $('.slick_slider_activation');
+
+            if ($sliderActivation.length > 0) {
+                if ($sliderActivation.hasClass('slick-initialized')) {
+                    $sliderActivation.slick('unslick');
+                }
+
+                $sliderActivation.slick({
+                    prevArrow: '<button class="prev_arrow"><i class="icon-arrow-left icons"></i></button>',
+                    nextArrow: '<button class="next_arrow"><i class="icon-arrow-right icons"></i></button>',
+                    // سایر تنظیمات Slick Slider
+                });
+            }
+        }
+        </script>
 
     <script src="_framework/blazor.web.js"></script>
 </body>
