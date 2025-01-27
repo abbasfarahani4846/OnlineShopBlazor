@@ -3,11 +3,12 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 <!--slider area start-->
+<section class="mb-63">
 <BlazorSlickCarousel Configurations="MainSliderSettings">
     <BlazorSlickCarouselContent>
         @foreach (var item in Slides)
         {
-            <div class="single_slider d-flex align-items-center" style="background-image:url('/images/banners/@item.ImageName')">
+                <div class="single_slider d-flex align-items-center" style="background-image:url('/images/banners/@item.ImageName'); height:100vh">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6 col-md-7">
@@ -37,7 +38,7 @@
 
     </BlazorSlickCarouselLoading>
 </BlazorSlickCarousel>
-
+</section>
 <!--slider area end-->
 <!--shipping section start-->
 <section class="shipping_section mb-102">
