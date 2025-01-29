@@ -34,13 +34,13 @@
     });
     
     // Slick Slider Activation
-    var $sliderActvation = $('.slick_slider_activation');
-    if($sliderActvation.length > 0){
-        $sliderActvation.slick({
-          prevArrow:'<button class="prev_arrow"><i class="icon-arrow-left icons"></i></button>',
-          nextArrow:'<button class="next_arrow"><i class="icon-arrow-right icons"></i></button>',
-        });
-    };
+    //var $sliderActvation = $('.slick_slider_activation');
+    //if($sliderActvation.length > 0){
+    //    $sliderActvation.slick({
+    //      prevArrow:'<button class="prev_arrow"><i class="icon-arrow-left icons"></i></button>',
+    //      nextArrow:'<button class="next_arrow"><i class="icon-arrow-right icons"></i></button>',
+    //    });
+    //};
     
     
     // Slick Slider Activation

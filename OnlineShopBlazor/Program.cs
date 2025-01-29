@@ -13,7 +13,8 @@ builder.Services.AddDbContextFactory<OnlineShopContext>();
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
-builder.Services.AddWMBSC();
+builder.Services.AddBlazorBootstrap();
+
 
 var app = builder.Build();
 
