@@ -144,8 +144,8 @@
 
                         @if (BestSellingProducts.Any())
                         {
-                        decimal ab = BestSellingProducts.Count;
-                        decimal aa = decimal.Parse((ab / 4).ToString());
+                            decimal ab = BestSellingProducts.Count;
+                            decimal aa = decimal.Parse((ab / 4).ToString());
 
                             var numberOfRow = Math.Ceiling(aa);
                             bool active = true;
@@ -158,47 +158,18 @@
                                     <div class="row">
                                         @foreach (var item in productsToDisplay)
                                         {
+                                            var product = new Product
+                                            {
+                                                Id = item.ProductId,
+                                                Title = item.Title,
+                                                Price = item.Price,
+                                                ImageName = item.ImageName,
+                                                Qty = item.Qty,
+                                            };
+
                                             <div class="col-6 col-md-3 single_product">
-                                                <div class="product_thumb">
-                                                    <a href="/product/productdetails/@item.ProductId">
-                                                        <img class="primary_img" src="/images/products/@item.ImageName" alt="@item.Title">
-                                                    </a>
 
-                                                    @if (item.Discount != null)
-                                                    {
-                                                        <div class="product_label">
-                                                            @{
-                                                                var discountPercentage = ((double)item.Discount / (double)item.Price) * 100;
-                                                                <span>
-                                                                    @discountPercentage.ToString("F0")
-                                                                </span>
-                                                            }
-                                                        </div>
-                                                    }
-                                                </div>
-                                                <div class="product_content grid_content text-center">
-
-                                                    <h4 class="product_name">
-                                                        <a href="product-details.html">
-                                                            @item.Title
-                                                        </a>
-                                                    </h4>
-                                                    <div class="price_box">
-                                                        @if (item.Discount != null)
-                                                        {
-                                                            <span class="current_price">$@(item.Price - item.Discount)</span>
-                                                            <span class="old_price">$@item.Price</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="current_price">$@item.Price</span>
-                                                        }
-                                                    </div>
-                                                    <div class="add_to_cart">
-                                                        <a class="btn btn-primary" onclick="updateCart(@item.ProductId, 1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
-                                                    </div>
-                                                </div>
-
+                                                <OnlineShopBlazor.Components.Pages.Common.ProductBoxComponent Model="product" />
                                             </div>
                                         }
                                     </div>
@@ -255,82 +226,13 @@
         <div class="product_container row">
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="all2" role="tabpanel">
-                    <Carousel>
-
-                        @if (NewProducts.Any())
-                        {
-                            decimal aa = (decimal)(NewProducts.Count / 4);
-                            var numberOfRow = Math.Ceiling(2.0);
-                            bool active = true;
-
-                            for (int i = 0; i < numberOfRow; i++)
-                            {
-                                var productsToDisplay = NewProducts.Skip(i * 4).Take(4);  // Skip i*4 and take 4 items for each row
-                                <CarouselItem Active="active">
-
-                                    <div class="row">
-                                        @foreach (var item in productsToDisplay)
-                                        {
-                                            <div class="col-6 col-md-3 single_product">
-                                                <div class="product_thumb">
-                                                    <a href="/product/productdetails/@item.Id">
-                                                        <img class="primary_img" src="/images/products/@item.ImageName" alt="@item.Title">
-                                                    </a>
-
-                                                    @if (item.Discount != null)
-                                                    {
-                                                        <div class="product_label">
-                                                            @{
-                                                                var discountPercentage = ((double)item.Discount / (double)item.Price) * 100;
-                                                                <span>
-                                                                    @discountPercentage.ToString("F0")
-                                                                </span>
-                                                            }
-                                                        </div>
-                                                    }
-                                                </div>
-                                                <div class="product_content grid_content text-center">
-
-                                                    <h4 class="product_name">
-                                                        <a href="product-details.html">
-                                                            @item.Title
-                                                        </a>
-                                                    </h4>
-                                                    <div class="price_box">
-                                                        @if (item.Discount != null)
-                                                        {
-                                                            <span class="current_price">$@(item.Price - item.Discount)</span>
-                                                            <span class="old_price">$@item.Price</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="current_price">$@item.Price</span>
-                                                        }
-                                                    </div>
-                                                    <div class="add_to_cart">
-                                                        <a class="btn btn-primary" onclick="updateCart(@item.Id, 1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        }
-                                    </div>
-                                </CarouselItem>
-
-                                active = false;
-                            }
-                        }
-
-                    </Carousel>
-
+                    <OnlineShopBlazor.Components.Pages.Common.NewProductsComponent />
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- product section end -->
-
-
 @code {
     public List<Banner> Slides { get; set; } = new List<Banner>();
     public List<Banner> Banner1 { get; set; } = new List<Banner>();
@@ -341,19 +243,6 @@
     public WMBSCInitialSettings MainSliderSettings { get; set; } = new WMBSCInitialSettings
         {
             autoplay = true,
-
-        };
-
-    public WMBSCInitialSettings ProductSliderSettings { get; set; } = new WMBSCInitialSettings
-        {
-            autoplay = true,
-            slidesToShow = 4,
-            slidesToScroll = 1,
-            responsive = new[] {
-    new WMBSCResponsiveSettings { breakpoint = 992, settings = new WMBSCSettings { slidesToShow = 3 } },
-    new WMBSCResponsiveSettings { breakpoint = 768, settings = new WMBSCSettings { slidesToShow = 2 } },
-    new WMBSCResponsiveSettings { breakpoint = 300, settings = new WMBSCSettings { slidesToShow = 1 } }
-},
 
         };
 

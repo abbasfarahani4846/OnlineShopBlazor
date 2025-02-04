@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineShopBlazor.Models.Db;
 using FluentValidation;
+using OnlineShopBlazor.Models.db;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 builder.Services.AddBlazorBootstrap();
 
+// Register FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<CommentValidation>();
 
 var app = builder.Build();
 

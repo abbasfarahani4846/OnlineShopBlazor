@@ -1,0 +1,47 @@
+﻿@inject IDbContextFactory<OnlineShopContext> DbContextFactory
+
+@rendermode InteractiveServer
+<Carousel>
+
+    @if (NewProducts.Any())
+    {
+        decimal aa = (decimal)(NewProducts.Count / 4);
+        var numberOfRow = Math.Ceiling(2.0);
+        bool active = true;
+
+        for (int i = 0; i < numberOfRow; i++)
+        {
+            var productsToDisplay = NewProducts.Skip(i * 4).Take(4);  // Skip i*4 and take 4 items for each row
+            <CarouselItem Active="active">
+
+                <div class="row">
+                    @foreach (var item in productsToDisplay)
+                    {
+                        <div class="col-6 col-md-3 single_product">
+                          <ProductBoxComponent Model="item"/>
+                        </div>
+                    }
+                </div>
+            </CarouselItem>
+
+            active = false;
+        }
+    }
+
+</Carousel>
+
+@code{
+    public List<Product> NewProducts { get; set; } = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        using var dbContext = DbContextFactory.CreateDbContext();
+
+        NewProducts = await dbContext.Products
+                                     .OrderByDescending(x => x.Id)
+                                     .Take(8)
+                                     .ToListAsync();
+
+    }
+}

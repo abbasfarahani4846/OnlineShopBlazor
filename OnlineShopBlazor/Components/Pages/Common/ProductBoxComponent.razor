@@ -1,0 +1,45 @@
+﻿@rendermode InteractiveServer
+<div class="product_thumb">
+    <a href="/ProductDetails?id=@Model.Id">
+        <img class="primary_img" src="/images/products/@Model.ImageName" alt="@Model.Title">
+    </a>
+
+    @if (Model.Discount != null)
+    {
+        <div class="product_label">
+            @{
+                var discountPercentage = ((double)Model.Discount / (double)Model.Price) * 100;
+                <span>
+                    @discountPercentage.ToString("F0")
+                </span>
+            }
+        </div>
+    }
+</div>
+<div class="product_content grid_content text-center">
+
+    <h4 class="product_name">
+        <a href="product-details.html">
+            @Model.Title
+        </a>
+    </h4>
+    <div class="price_box">
+        @if (Model.Discount != null)
+        {
+            <span class="current_price">$@(Model.Price - Model.Discount)</span>
+            <span class="old_price">$@Model.Price</span>
+        }
+        else
+        {
+            <span class="current_price">$@Model.Price</span>
+        }
+    </div>
+    <div class="add_to_cart">
+        <a class="btn btn-primary" onclick="updateCart(@Model.Id, 1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Product Model { get; set; }
+}

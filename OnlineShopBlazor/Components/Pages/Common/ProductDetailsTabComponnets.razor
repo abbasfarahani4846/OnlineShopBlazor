@@ -1,0 +1,155 @@
+﻿@using Blazored.FluentValidation
+@rendermode InteractiveServer
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+
+<Tabs>
+    <Tab Title="Product Descriptio" Active="true">
+        <Content>
+
+            <div class="product_info_content">
+                @((MarkupString)(Product.Text?.Replace("\n", "<br/>")))
+            </div>
+
+        </Content>
+    </Tab>
+    <Tab Title="Reviews">
+        <Content>
+
+            <div class="reviews_wrapper">
+                <h2>@Comments.Count review for @Product.Title</h2>
+                @foreach (var item in Comments)
+                {
+                    <div class="reviews_comment_box">
+                        <div class="comment_thmb">
+                            <img src="/assets/img/blog/comment2.jpg" alt="">
+                        </div>
+                        <div class="comment_text">
+                            <div class="reviews_meta">
+                                <p>
+                                    <strong>
+                                        @item.Name -
+                                    </strong>
+                                    @item.CreateDate
+                                </p>
+                                <span>
+                                    @item.CommentText
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+                <div class="comment_title">
+                    <h2>Add a review </h2>
+                    <p>Your email address will not be published. Required fields are marked </p>
+                </div>
+                <div class="product_review_form">
+                    <EditForm Model="Comment" OnValidSubmit="SubmitComment" FormName="create">
+
+                        <FluentValidationValidator @ref="_fluentValidationValidator" />
+                        <ValidationSummary role="alert" />
+
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="review_comment">Your review </label>
+                                <InputTextArea @bind-Value="Comment.CommentText"></InputTextArea>
+                                <ValidationMessage For="@(() => Comment.CommentText)" />
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label for="author">Name</label>
+                                <InputText @bind-Value="Comment.Name"></InputText>
+                                <ValidationMessage For="@(() => Comment.Name)" />
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <label for="email">Email </label>
+                                <InputText @bind-Value="Comment.Email"></InputText>
+                                <ValidationMessage For="@(() => Comment.Email)" />
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Message))
+                        {
+                            <Alert Color="AlertColor.Success"> 
+                                @Message
+                            </Alert>
+
+                        }
+                        <button type="submit">Submit</button>
+                    </EditForm>
+                </div>
+            </div>
+
+        </Content>
+    </Tab>
+    <Tab Title="Tags">
+        <Content>
+
+            <div class="product_info_content">
+                <ul>
+                    @if (!string.IsNullOrEmpty(Product.Tags))
+                    {
+                        var tags = Product.Tags.Split(",");
+
+                        @foreach (var item in tags)
+                        {
+                            <li>
+                                @item
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+
+        </Content>
+    </Tab>
+    <Tab Title="Video">
+        <Content>
+
+            <div class="product_tab_vidio text-center">
+                <iframe width="729" height="410" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+        </Content>
+    </Tab>
+</Tabs>
+
+@code {
+    [Parameter]
+    public Product Product { get; set; }
+    private List<Comment> Comments { get; set; } = new();
+    private string Message { get; set; }
+
+    [SupplyParameterFromForm]
+    private Comment Comment { get; set; } = new();
+
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    private OnlineShopContext context = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbFactory.CreateDbContext();
+
+        Comments = await context.Comments.Where(x => x.ProductId == Product.Id).ToListAsync();
+    }
+
+    private async Task SubmitComment()
+    {
+        bool isValid = await _fluentValidationValidator!.ValidateAsync();
+        if (isValid)
+        {
+            Comment.CreateDate = DateTime.Now;
+            Comment.ProductId = Product.Id;
+
+            context.Comments.Add(Comment);
+            await context.SaveChangesAsync();
+
+            Message = "Comment has success fully saved";
+            Comments = await context.Comments.Where(x => x.ProductId == Product.Id).ToListAsync();
+            Comment = new();
+        }
+
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
