@@ -1,0 +1,26 @@
+﻿@rendermode InteractiveServer
+
+<Carousel Touch="true">
+    <CarouselItem Active="true">
+
+        <div class="col text-center">
+            <img src="/images/products/@ImageName" alt="@ImageName" style="height:75vh" />
+
+        </div>
+    </CarouselItem>
+    @foreach (var item in Galleries)
+    {
+        <CarouselItem>
+            <div class="col text-center">
+                <img src="/images/products/@item.ImageName" alt="@item.ImageName" style="height:75vh" />
+            </div>
+        </CarouselItem>
+    }
+
+</Carousel>
+@code {
+    [Parameter]
+    public string ImageName { get; set; }
+    [Parameter]
+    public List<ProductGallery> Galleries { get; set; }
+}

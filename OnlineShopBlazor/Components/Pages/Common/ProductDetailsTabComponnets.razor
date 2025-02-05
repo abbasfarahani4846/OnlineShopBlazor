@@ -112,8 +112,12 @@
         </Content>
     </Tab>
 </Tabs>
+<Toasts class="p-3" AutoHide="true" Delay="6000" Placement="ToastsPlacement.BottomRight" />
+
 
 @code {
+    [Inject] protected ToastService ToastService { get; set; }
+
     [Parameter]
     public Product Product { get; set; }
     private List<Comment> Comments { get; set; } = new();
@@ -144,7 +148,7 @@
             context.Comments.Add(Comment);
             await context.SaveChangesAsync();
 
-            Message = "Comment has success fully saved";
+            ToastService.Notify(new(ToastType.Success, $"success fully saved","Youre comment has saved success fully and amazing"));
             Comments = await context.Comments.Where(x => x.ProductId == Product.Id).ToListAsync();
             Comment = new();
         }
