@@ -112,11 +112,12 @@
         </Content>
     </Tab>
 </Tabs>
-<Toasts class="p-3" AutoHide="true" Delay="6000" Placement="ToastsPlacement.BottomRight" />
-
+<Toasts class="p-3" AutoHide="true" Delay="6000" Placement="ToastsPlacement.TopRight" />
+<Preload />
 
 @code {
     [Inject] protected ToastService ToastService { get; set; }
+    [Inject] protected PreloadService PreloadService { get; set; }
 
     [Parameter]
     public Product Product { get; set; }
@@ -142,15 +143,21 @@
         bool isValid = await _fluentValidationValidator!.ValidateAsync();
         if (isValid)
         {
+            PreloadService.Show(SpinnerColor.Light, "Saving data...");
+
             Comment.CreateDate = DateTime.Now;
             Comment.ProductId = Product.Id;
 
             context.Comments.Add(Comment);
             await context.SaveChangesAsync();
 
-            ToastService.Notify(new(ToastType.Success, $"success fully saved","Youre comment has saved success fully and amazing"));
+            
             Comments = await context.Comments.Where(x => x.ProductId == Product.Id).ToListAsync();
             Comment = new();
+
+            await Task.Delay(1500); // call the service/api
+            PreloadService.Hide();
+            ToastService.Notify(new(ToastType.Success, $"success fully saved"));
         }
 
     }
