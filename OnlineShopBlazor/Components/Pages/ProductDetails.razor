@@ -35,7 +35,7 @@
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="product_zoom_gallery">
-                    <OnlineShopBlazor.Components.Pages.Common.ProductDetailsImageSlider Galleries="Galleries" ImageName="@Product.ImageName" />
+                    <OnlineShopBlazor.Components.Pages.Common.ProductDetailsImageSlider Galleries="@Galleries" ImageName="@Product.ImageName" />
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
@@ -139,7 +139,7 @@
             <div class="col-12">
                 <div class="product_d_inner">
                     <div class="product_info_button border-bottom">
-                      <OnlineShopBlazor.Components.Pages.Common.ProductDetailsTabComponnets Product="Product"/>
+                      <OnlineShopBlazor.Components.Pages.Common.ProductDetailsTabComponnets Product="@Product"/>
                     </div>
                 </div>
             </div>
@@ -177,19 +177,19 @@
     private Product? Product { get; set; } = new();
     private List<ProductGallery> Galleries { get; set; } = new();
 
-    private OnlineShopContext context = default!;
     protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
-        Product = await context.Products.FirstOrDefaultAsync(x => x.Id == Id);
+
+        using var dbContext = DbFactory.CreateDbContext();
+
+        Product = await dbContext.Products.FirstOrDefaultAsync(x => x.Id == Id);
 
         if (Product.Id == 0)
         {
             NavigationManager.NavigateTo("notfound");
         }
-        Galleries = context.ProductGalleries.Where(x => x.ProductId == Product.Id).ToList();
+        Galleries = dbContext.ProductGalleries.Where(x => x.ProductId == Product.Id).ToList();
 
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }
