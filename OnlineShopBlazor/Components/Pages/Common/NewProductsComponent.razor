@@ -6,7 +6,7 @@
     @if (NewProducts.Any())
     {
         decimal aa = (decimal)(NewProducts.Count / 4);
-        var numberOfRow = Math.Ceiling(2.0);
+        var numberOfRow = Math.Ceiling(aa);
         bool active = true;
 
         for (int i = 0; i < numberOfRow; i++)

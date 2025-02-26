@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="OnlineShopBlazor.styles.css" />
 
     <style>
-       .carousel-control-prev span, .carousel-control-next span {
+        .carousel-control-prev span, .carousel-control-next span {
             background-color: gray;
         }
     </style>
@@ -69,32 +69,52 @@
     <script src="/assets/js/jquery.instagramFeed.min.js"></script>
     <script src="/assets/js/jquery.magnific-popup.min.js"></script>
     <script src="/assets/js/mailchimp-ajax.js"></script>
-
-
-
-
-
-
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script>
 
     <script>
-       function generateSlider() {
-            var $sliderActivation = $('.slick_slider_activation');
+        function generateSlider() {
+             var $sliderActivation = $('.slick_slider_activation');
 
-            if ($sliderActivation.length > 0) {
-                if ($sliderActivation.hasClass('slick-initialized')) {
-                    $sliderActivation.slick('unslick');
-                }
+             if ($sliderActivation.length > 0) {
+                 if ($sliderActivation.hasClass('slick-initialized')) {
+                     $sliderActivation.slick('unslick');
+                 }
 
-                $sliderActivation.slick({
-                    prevArrow: '<button class="prev_arrow"><i class="icon-arrow-left icons"></i></button>',
-                    nextArrow: '<button class="next_arrow"><i class="icon-arrow-right icons"></i></button>',
-                    // سایر تنظیمات Slick Slider
-                });
-            }
-        }
-        </script>
+                 $sliderActivation.slick({
+                     prevArrow: '<button class="prev_arrow"><i class="icon-arrow-left icons"></i></button>',
+                     nextArrow: '<button class="next_arrow"><i class="icon-arrow-right icons"></i></button>',
+                     // سایر تنظیمات Slick Slider
+                 });
+             }
+         }
+
+        function changeView(ele) {
+
+             $('.shop_toolbar_btn ul li a').removeClass('active');
+             ele.addClass('active');
+
+             var parentsDiv = $('.shop_wrapper');
+             var viewMode = ele.data('role');
+
+
+             parentsDiv.removeClass('grid_3 grid_4 grid_5 grid_list').addClass(viewMode);
+
+             if (viewMode == 'grid_3') {
+                 parentsDiv.children().addClass('col-lg-4 col-md-4 col-sm-6').removeClass('col-lg-3 col-cust-5 col-12');
+
+             }
+
+             if (viewMode == 'grid_4') {
+                 parentsDiv.children().addClass('col-lg-3 col-md-4 col-sm-6').removeClass('col-lg-4 col-cust-5 col-12');
+             }
+
+             if (viewMode == 'grid_list') {
+                 parentsDiv.children().addClass('col-12').removeClass('col-lg-3 col-lg-4 col-md-4 col-sm-6 col-cust-5');
+             }
+         }
+       
+    </script>
 
     <script src="_framework/blazor.web.js"></script>
 </body>
