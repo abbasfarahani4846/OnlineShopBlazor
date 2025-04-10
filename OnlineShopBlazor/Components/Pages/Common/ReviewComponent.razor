@@ -31,10 +31,10 @@
         <p>Your email address will not be published. Required fields are marked </p>
     </div>
     <div class="product_review_form">
-        <EditForm Model="Comment" OnValidSubmit="SubmitComment" FormName="create">
+        <EditForm Model="Comment" OnValidSubmit="SubmitComment" FormName="create" Enhance>
 
             <FluentValidationValidator @ref="_fluentValidationValidator" />
-            <ValidationSummary role="alert" />
+            @* <ValidationSummary role="alert" /> *@
 
             <div class="row">
                 <div class="col-12">
@@ -58,7 +58,7 @@
         </EditForm>
     </div>
 </div>
-
+<Preload />
 @code {
     [Inject]
     protected ToastService ToastService { get; set; } = default!;
