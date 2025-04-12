@@ -18,7 +18,7 @@
                 @* EditForm binds directly to the User model instance *@
                 <EditForm Model="UserModel" Enhance OnValidSubmit="HandleValidSubmit" FormName="Register">
                     @* Integrate FluentValidation for the User model *@
-                    @* <FluentValidationValidator @ref="_fluentValidationValidator" /> *@
+
                     <FluentValidationValidator Validator="Validator" />
 
                     @* Display general error messages *@
@@ -75,47 +75,46 @@
     protected PreloadService PreloadService { get; set; } = default!;
     private string? _errorMessage = null;
 
-    private FluentValidationValidator? _fluentValidationValidator;
-
-
     private async Task HandleValidSubmit()
     {
-       
-            try
+
+        try
+        {
+            PreloadService.Show(SpinnerColor.Light, "Saving data...");
+            await Task.Delay(1500);
+
+            using var context = DbFactory.CreateDbContext();
+
+            if (context.Users.Any(x => x.Email == UserModel.Email.Trim().ToLower()))
             {
-                PreloadService.Show(SpinnerColor.Light, "Saving data...");
-                await Task.Delay(1500);
-
-                // --- Set default values for the new user ---
-                UserModel.IsAdmin = false; // Default new users are not admins
-                UserModel.RegisterDate = DateTime.Now; // Set registration timestamp
-                UserModel.RecoveryCode = null; // No recovery code initially
-                UserModel.Email = UserModel.Email.Trim().ToLower();
-
-                using var context = DbFactory.CreateDbContext();
-
-                if (context.Users.Any(x => x.Email == UserModel.Email))
-                {
-                    _errorMessage = "this email is already taked";
-                    return;
-                }
-
-                await context.Users.AddAsync(UserModel);
-                await context.SaveChangesAsync();
-
-                UserModel = new(); // Create a new instance to clear bound fields
-                NavigationManager.NavigateTo("/login");
+                _errorMessage = "this email already is in use";
+                return;
             }
-            catch (Exception ex)
-            {
-                // Log the actual exception for diagnostics
-                Console.Error.WriteLine($"Registration failed: {ex.ToString()}");
-                _errorMessage = "An unexpected error occurred during registration. Please try again later.";
-            }
-            finally
-            {
-                PreloadService.Hide();
-            }
-        
+
+            // --- Set default values for the new user ---
+            UserModel.IsAdmin = false; // Default new users are not admins
+            UserModel.RegisterDate = DateTime.Now; // Set registration timestamp
+            UserModel.RecoveryCode = null; // No recovery code initially
+            UserModel.Email = UserModel.Email.Trim().ToLower();
+            UserModel.Password = UserModel.Password.Trim();
+            UserModel.FullName = UserModel.FullName.Trim();
+
+            await context.Users.AddAsync(UserModel);
+            await context.SaveChangesAsync();
+
+            UserModel = new(); // Create a new instance to clear bound fields
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            // Log the actual exception for diagnostics
+            Console.Error.WriteLine($"Registration failed: {ex.ToString()}");
+            _errorMessage = "An unexpected error occurred during registration. Please try again later.";
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+
     }
 }

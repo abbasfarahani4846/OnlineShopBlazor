@@ -1,11 +1,15 @@
 ﻿@page "/login"
 @using FluentValidation
 @using Blazored.FluentValidation
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using OnlineShopBlazor.Models.Validations
 @using OnlineShopBlazor.Models.ViewModels
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication;
 
- @inject NavigationManager NavigationManager
+@inject NavigationManager NavigationManager
 @inject IValidator<LoginViewModel> Validator
-@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+@inject AuthService AuthService
 @rendermode InteractiveServer
 
 
@@ -52,7 +56,7 @@
                 </EditForm>
             </div>
             <div class="card-footer text-center py-3">
-                <a href="/login">Already have an account? Login</a>
+                <a href="/Register">Already have no account? Register</a>
             </div>
         </div>
     </div>
@@ -69,38 +73,14 @@
 
     private async Task HandleValidSubmit()
     {
-        try
+        var result = await AuthService.LoginAsync(LoginModel.Email, LoginModel.Password);
+        if (result)
         {
-            PreloadService.Show(SpinnerColor.Light, "Saving data...");
-            await Task.Delay(1500);
-
-
-            LoginModel.Email = LoginModel.Email.Trim().ToLower();
-            LoginModel.Password = LoginModel.Password.Trim();
-
-            using var context = DbFactory.CreateDbContext();
-
-            var user = await context.Users.FirstOrDefaultAsync(x => x.Email == LoginModel.Email && x.Password == LoginModel.Password);
-            if (user== null)
-            {
-                _errorMessage = "Username or password isn`t correct";
-                return;
-            }
-
-
-
-            LoginModel = new(); // Create a new instance to clear bound fields
-            NavigationManager.NavigateTo("/login");
+            NavigationManager.NavigateTo("/");
         }
-        catch (Exception ex)
+        else
         {
-            // Log the actual exception for diagnostics
-            Console.Error.WriteLine($"Registration failed: {ex.ToString()}");
-            _errorMessage = "An unexpected error occurred during registration. Please try again later.";
-        }
-        finally
-        {
-            PreloadService.Hide();
+            _errorMessage = "Invalid email or password.";
         }
     }
 }

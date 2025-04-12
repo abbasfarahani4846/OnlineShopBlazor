@@ -1,6 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 @inject IDbContextFactory<OnlineShopContext> DbContextFactory
 @inject NavigationManager NavigationManager
+
 
 @* <MudThemeProvider />
 <MudPopoverProvider /> *@
@@ -97,23 +99,7 @@
                         <div class="header_account">
                             <ul class="d-flex">
                                 <li class="header_search"><a><i class="icon-magnifier icons"></i></a></li>
-                                @*  <li class="account_link">
-                                    <a href="#"><i class="icon-user icons @(User.Identity.IsAuthenticated?"text-danger":"")"></i></a>
-                                    <ul class="dropdown_account_link">
-                                        @if (User.Identity.IsAuthenticated)
-                                        {
-                                            <li><a href="/user">My Account</a></li>
-                                            <li><a href="/User/Orders">Order list</a></li>
-                                            <li><a href="/account/logout">Logout</a></li>
-                                        }
-                                        else
-                                        {
-                                            <li><a href="/account/login">Login</a></li>
-                                            <li><a href="/account/register">Register</a></li>
-                                        }
-
-                                    </ul>
-                                </li> *@
+                               <OnlineShopBlazor.Components.Pages.Common.UserMenuComponent/>
                                 <li class="shopping_cart">
                                     <a href="#"><i class="icon-basket-loaded icons"></i></a>
                                     <span class="item_count">
@@ -223,8 +209,6 @@
     </div>
 </footer>
 <!--footer area end-->
-
-
 @code {
     private Models.Db.Setting Setting { get; set; } = new();
     public List<Menu> TopMenu { get; set; } = new List<Menu>();

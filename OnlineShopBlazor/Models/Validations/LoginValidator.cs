@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using OnlineShopBlazor.Models.Db;
+using OnlineShopBlazor.Models.ViewModels;
 
 namespace OnlineShopBlazor.Models.Validations
 {
 
-    public class LoginValidator : AbstractValidator<User>
+    public class LoginValidator : AbstractValidator<LoginViewModel>
     {
         public LoginValidator()
         {

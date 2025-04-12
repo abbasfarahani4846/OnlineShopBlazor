@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using OnlineShopBlazor.Models.Db;
 using FluentValidation;
 using OnlineShopBlazor.Models.db;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using OnlineShopBlazor.Models.Validations;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,11 @@ builder.Services.AddBlazorBootstrap();
 
 // Register FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<CommentValidation>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+
+builder.Services.AddScoped<AuthenticationStateProvider, AuthService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddAuthorizationCore();
 
 var app = builder.Build();
 
