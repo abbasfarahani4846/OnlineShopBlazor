@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider AuthStateProvider
+@implements IDisposable
 
 <li class="account_link">
     <AuthorizeView>
@@ -26,12 +27,28 @@
 </li>
 
 @code {
+       [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
     private void Logout()
     {
         // فقط به صفحه logout برو، کار logout در اون صفحه انجام میشه
         Navigation.NavigateTo("/logout");
     }
 
-    [Inject]
-    private NavigationManager Navigation { get; set; } = default!;
+    protected override void OnInitialized()
+    {
+        AuthStateProvider.AuthenticationStateChanged += OnAuthStateChanged;
+    }
+
+    private void OnAuthStateChanged(Task<AuthenticationState> task)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AuthStateProvider.AuthenticationStateChanged -= OnAuthStateChanged;
+    }
+
+ 
 }
