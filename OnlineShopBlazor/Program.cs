@@ -6,6 +6,8 @@ using OnlineShopBlazor.Models.db;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OnlineShopBlazor.Models.Validations;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using BlazorLoginExample.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,10 +24,22 @@ builder.Services.AddBlazorBootstrap();
 // Register FluentValidation
 builder.Services.AddValidatorsFromAssemblyContaining<CommentValidation>();
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
-builder.Services.AddScoped<AuthenticationStateProvider, AuthService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddAuthorizationCore();
+
+// --- Authentication Configuration START ---
+builder.Services.AddAuthentication("MyCookieAuth") // Use a specific scheme name
+    .AddCookie("MyCookieAuth", options => // Must match scheme name above
+    {
+        options.Cookie.Name = "OnlineShop.Auth";
+        options.LoginPath = "/login"; // Page users are sent to when they need to log in
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Cookie expiration
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<LoginService>();
+
 
 var app = builder.Build();
 
@@ -46,5 +60,15 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// --- Logout Endpoint START ---
+// Map a specific endpoint for handling the logout POST request
+app.MapPost("/logout", async (HttpContext ctx) =>
+{
+    await ctx.SignOutAsync("MyCookieAuth"); // Use the correct scheme name
+    return Results.Redirect("/"); // Redirect to home page after logout
+}).RequireAuthorization(); // Only authenticated users can logout
+// --- Logout Endpoint END ---
+
 
 app.Run();
