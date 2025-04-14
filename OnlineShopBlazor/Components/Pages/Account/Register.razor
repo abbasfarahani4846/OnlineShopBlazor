@@ -29,11 +29,9 @@
                         </div>
                     }
 
-                    @* Full Name Field - Bound to User.FullName *@
                     <div class="mb-3">
                         <label for="fullName" class="form-label">Full Name</label>
                         <InputText id="fullName" class="form-control" @bind-Value="UserModel.FullName" placeholder="Enter your full name" />
-                        @* Validation message displayed via Blazored.FluentValidation integration *@
                         <ValidationMessage For="@(() => UserModel.FullName)" class="invalid-feedback d-block" />
                     </div>
 

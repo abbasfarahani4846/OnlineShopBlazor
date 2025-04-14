@@ -10,7 +10,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IValidator<LoginViewModel> Validator
-@inject LoginService LoginService
+@inject LoginService _loginService
 
 
 <div class="row justify-content-center" style="margin-top: 200px;">
@@ -74,7 +74,7 @@
     private async Task HandleValidSubmit()
     {
 
-        bool success = await LoginService.LoginAsync(LoginModel.Email, LoginModel.Password);
+        bool success = await _loginService.LoginAsync(LoginModel.Email, LoginModel.Password);
 
         if (success)
         {

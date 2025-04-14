@@ -59,5 +59,21 @@ namespace BlazorLoginExample.Services // Adjust namespace if needed
 
             return false; // Login failed
         }
+
+        public async Task<bool> LogoutAsync()
+        {
+            // Get the HttpContext via the accessor
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext == null)
+            {
+                // This shouldn't happen if dependency injection is set up correctly
+                // and the call originates from a valid request context.
+                return false;
+            }
+            await httpContext.SignOutAsync("MyCookieAuth");
+
+            return true;
+        }
     }
 }
