@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using OnlineShopBlazor.Models.Validations;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authentication;
-using BlazorLoginExample.Services;
+using OnlineShopBlazor.Models.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +25,7 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddValidatorsFromAssemblyContaining<CommentValidation>();
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
-
+builder.Services.AddValidatorsFromAssemblyContaining<RecoveryPasswordValidator>();
 
 // --- Authentication Configuration START ---
 builder.Services.AddAuthentication("MyCookieAuth") // Use a specific scheme name
@@ -60,15 +60,5 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-// --- Logout Endpoint START ---
-// Map a specific endpoint for handling the logout POST request
-app.MapPost("/logout", async (HttpContext ctx) =>
-{
-    await ctx.SignOutAsync("MyCookieAuth"); // Use the correct scheme name
-    return Results.Redirect("/"); // Redirect to home page after logout
-}).RequireAuthorization(); // Only authenticated users can logout
-// --- Logout Endpoint END ---
-
 
 app.Run();

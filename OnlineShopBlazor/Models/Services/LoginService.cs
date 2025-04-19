@@ -7,7 +7,7 @@ using OnlineShopBlazor.Models.Db;
 
 using System.Security.Claims;
 
-namespace BlazorLoginExample.Services // Adjust namespace if needed
+namespace OnlineShopBlazor.Models.Services // Adjust namespace if needed
 {
     public class LoginService
     {
@@ -47,7 +47,7 @@ namespace BlazorLoginExample.Services // Adjust namespace if needed
                     // and the call originates from a valid request context.
                     return false;
                 }
-
+                
                 // Sign in the user using the specified authentication scheme ("MyCookieAuth")
                 // This is the call that creates and sets the authentication cookie.
                 await httpContext.SignInAsync(
