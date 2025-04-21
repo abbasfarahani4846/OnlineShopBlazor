@@ -125,7 +125,7 @@ Steps:
         await SmtpServer.SendMailAsync(mail);
 
         loading = false;
-        NavigationManager.NavigateTo("/ResetPassword/" + foundUser.Email);
+        NavigationManager.NavigateTo("/ResetPassword");
 
     }
 }
