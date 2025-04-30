@@ -108,12 +108,15 @@
     
     
     //Shopping Cart addClass removeClass
-    $('.shopping_cart > a').on('click', function(){
-        $('.mini_cart,.body_overlay').addClass('active')
-    });
-    $('.mini_cart_close a,.body_overlay').on('click', function(){
-        $('.mini_cart,.body_overlay').removeClass('active')
-    });
+    //$('.shopping_cart > a').on('click', function(){
+    //    $('.mini_cart,.body_overlay').addClass('active')
+    //});
+    //$('.mini_cart_close a,.body_overlay').on('click', function(){
+    //    $('.mini_cart,.body_overlay').removeClass('active')
+    //});
+
+
+
     
     
     //Search Box addClass removeClass
@@ -320,3 +323,4 @@
     
     
 })(jQuery);	
+

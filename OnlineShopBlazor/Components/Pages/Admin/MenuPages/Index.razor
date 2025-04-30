@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using OnlineShopBlazor.Models.Db
 @implements IAsyncDisposable
-@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopOrginalContext> DbFactory
 
 <PageTitle>Index</PageTitle>
 
@@ -25,7 +25,7 @@
 </QuickGrid>
 
 @code {
-    private OnlineShopContext context = default!;
+    private OnlineShopOrginalContext context = default!;
 
     protected override void OnInitialized()
     {

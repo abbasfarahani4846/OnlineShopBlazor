@@ -1,7 +1,7 @@
 ﻿@page "/shop"
 @using OnlineShopBlazor.Models.Db
 @implements IAsyncDisposable
-@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbFactory
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopOrginalContext> DbFactory
 
 <!--shop  area start-->
 <div class="shop_section shop_reverse">
@@ -94,7 +94,7 @@
 
                                     </div>
                                     <div class="add_to_cart">
-                                        <a class="btn btn-primary" onclick="updateCart(@item.Id,1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
+                                        <OnlineShopBlazor.Components.Pages.Common.AddToCartButtonComponent ProductId="item.Id" />
                                     </div>
                                 </div>
                                 <div class="product_list_content">
@@ -121,8 +121,7 @@
                                         </p>
                                     </div>
                                     <div class="add_to_cart">
-                                        <a class="btn btn-primary" onclick="updateCart(@item.Id,1)" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">Add To Cart</a>
-
+                                        <OnlineShopBlazor.Components.Pages.Common.AddToCartButtonComponent ProductId="item.Id" />
                                     </div>
                                 </div>
                             </div>
@@ -137,6 +136,8 @@
         </div>
     </div>
 </div>
+
+
 <!--shop  area end-->
 @code {
     [SupplyParameterFromQuery]
@@ -144,7 +145,7 @@
 
     public List<Product> Products { get; set; }
 
-    private OnlineShopContext context = default!;
+    private OnlineShopOrginalContext context = default!;
 
     protected override void OnInitialized()
     {

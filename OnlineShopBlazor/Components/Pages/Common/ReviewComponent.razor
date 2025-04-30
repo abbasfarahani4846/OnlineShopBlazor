@@ -1,6 +1,6 @@
 ﻿@using Blazored.FluentValidation
 @rendermode InteractiveServer
-@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopContext> DbContextFactory
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopOrginalContext> DbContextFactory
 
 <div class="reviews_wrapper">
     <h2>@Comments.Count review for @Product.Title</h2>
@@ -74,7 +74,7 @@
 
     private FluentValidationValidator? _fluentValidationValidator;
 
-    private OnlineShopContext context = default!;
+    private OnlineShopOrginalContext context = default!;
 
     protected override async Task OnInitializedAsync()
     {

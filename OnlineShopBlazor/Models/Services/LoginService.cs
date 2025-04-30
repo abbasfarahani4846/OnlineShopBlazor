@@ -1,5 +1,4 @@
-﻿// Services/LoginService.cs
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,10 +11,10 @@ namespace OnlineShopBlazor.Models.Services // Adjust namespace if needed
     public class LoginService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly OnlineShopContext _context;
+        private readonly OnlineShopOrginalContext _context;
 
         // Inject IHttpContextAccessor
-        public LoginService(IHttpContextAccessor httpContextAccessor, OnlineShopContext context)
+        public LoginService(IHttpContextAccessor httpContextAccessor, OnlineShopOrginalContext context)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;

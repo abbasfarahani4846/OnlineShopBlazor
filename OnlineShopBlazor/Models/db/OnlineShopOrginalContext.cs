@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OnlineShopBlazor.Models.Db;
 
-public partial class OnlineShopContext : DbContext
+public partial class OnlineShopOrginalContext : DbContext
 {
-    public OnlineShopContext()
+    public OnlineShopOrginalContext()
     {
     }
 
-    public OnlineShopContext(DbContextOptions<OnlineShopContext> options)
+    public OnlineShopOrginalContext(DbContextOptions<OnlineShopOrginalContext> options)
         : base(options)
     {
     }
@@ -20,6 +20,8 @@ public partial class OnlineShopContext : DbContext
     public virtual DbSet<BestSellingFinal> BestSellingFinals { get; set; }
 
     public virtual DbSet<BestSellingProduct> BestSellingProducts { get; set; }
+
+    public virtual DbSet<Cart> Carts { get; set; }
 
     public virtual DbSet<Comment> Comments { get; set; }
 
@@ -86,6 +88,11 @@ public partial class OnlineShopContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(500)
                 .HasColumnName("TItle");
+        });
+
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.ToTable("Cart");
         });
 
         modelBuilder.Entity<Comment>(entity =>

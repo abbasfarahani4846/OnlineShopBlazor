@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContextFactory<OnlineShopContext>();
+builder.Services.AddDbContextFactory<OnlineShopOrginalContext>();
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 

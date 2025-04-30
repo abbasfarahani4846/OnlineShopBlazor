@@ -1,14 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using OnlineShopBlazor.Models.Services
 @inherits LayoutComponentBase
-@inject IDbContextFactory<OnlineShopContext> DbContextFactory
+@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory
 @inject NavigationManager NavigationManager
-
 
 @* <MudThemeProvider />
 <MudPopoverProvider /> *@
 <!--offcanvas menu area start-->
-<div class="body_overlay">
-</div>
+<div class="body_overlay"></div>
+
 <div class="offcanvas_menu">
     <div class="container">
         <div class="row">
@@ -61,10 +61,7 @@
     </div>
 </div>
 <!--offcanvas menu area end-->
-<!--mini cart-->
-<div class="mini_cart">
-</div>
-<!--mini cart end-->
+
 <!--header area start-->
 <header class="header_section header_transparent">
 
@@ -127,10 +124,8 @@
                                 </li>
 
                                 <li class="shopping_cart">
-                                    <a href="#"><i class="icon-basket-loaded icons"></i></a>
-                                    <span class="item_count">
-                                        0
-                                    </span>
+                                    <a href="/cart"><i class="icon-basket-loaded icons"></i></a>
+                                    
                                 </li>
                             </ul>
                         </div>
@@ -235,10 +230,13 @@
     </div>
 </footer>
 <!--footer area end-->
+
+
 @code {
     private Models.Db.Setting Setting { get; set; } = new();
     public List<Menu> TopMenu { get; set; } = new List<Menu>();
     public List<Menu> BottomMenu { get; set; } = new List<Menu>();
+
 
     protected override async Task OnInitializedAsync()
     {
