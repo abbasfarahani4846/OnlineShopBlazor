@@ -1,19 +1,21 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
-@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ToastService ToastService
-@rendermode InteractiveServer
-@inject NavigationManager NavigationManager
+﻿@using Microsoft.AspNetCore.Components.Authorization // Import necessary namespace for authorization components
+@using System.Security.Claims // Import necessary namespace for handling claims
+@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory // Inject the database context factory for database operations
+@inject AuthenticationStateProvider AuthenticationStateProvider // Inject the authentication state provider to get user authentication status
+@rendermode InteractiveServer // Set the render mode for the component to Interactive Server
+@inject NavigationManager NavigationManager // Inject the navigation manager for handling navigation
 
 <a class="btn btn-primary" disabled="@(loading?"disabled":null)" @onclick="AddToCartAsync" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">
-  
+
+    @* Check if the 'loading' state is true *@
     @if (loading)
     {
+        @* Display a spinner component while loading *@
         <Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Light" />
     }
     else
     {
+        @* Display the button text "Add To Cart" when not loading *@
         <span>
             Add To Cart
         </span>
@@ -22,72 +24,96 @@
 
 
 @code {
-    [Parameter] public int ProductId { get; set; }  // پارامتر دریافت شناسه محصول
+    // Parameter to receive the product ID from the parent component
+    [Parameter] public int ProductId { get; set; }
 
+    // Private field to track the loading state of the add-to-cart operation
     private bool loading = false;
 
+    // Asynchronous method to handle adding the product to the cart
     private async Task AddToCartAsync()
     {
+        // Set loading state to true to indicate the operation has started
         loading = true;
+        // Simulate a delay (e.g., for network latency or visual feedback)
         await Task.Delay(1500);
 
-        // دریافت شناسه کاربر
+        // Get the ID of the currently logged-in user
         var userId = await GetUserIdAsync();
 
+        // Check if the user is logged in (userId is 0 if not logged in)
         if (userId == 0)
         {
+            // Set loading state back to false
             loading = false;
-            NavigationManager.NavigateTo("/");
-            // کاربر وارد نشده است
+            // Redirect the user to the login page
+            NavigationManager.NavigateTo("/login");
+            // User is not logged in, exit the method
             return;
         }
 
-        // اتصال به دیتابیس و اضافه کردن محصول به سبد خرید
+        // Create a database context instance using the injected factory
         using var context = DbContextFactory.CreateDbContext();
 
+        // Find the product in the database using the provided ProductId
         var product = await context.Products.FindAsync(ProductId);
+        // Check if the product was found
         if (product == null)
         {
+            // Set loading state back to false
             loading = false;
-            // محصول پیدا نشد
+            // Product not found, exit the method
             return;
         }
 
+        // Check if the item is already in the user's cart
         var cartItem = await context.Carts
             .FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == ProductId);
 
-        // اگر محصول قبلاً در سبد خرید موجود نیست، آن را اضافه می‌کنیم
+        // If the product is not already in the cart, add it
         if (cartItem == null)
         {
+            // Create a new Cart entity and add it to the context
             context.Carts.Add(new Cart
                 {
                     UserId = userId,
                     ProductId = ProductId,
-                    Count = 1 // پیش‌فرض تعداد 1 است
+                    Count = 1 // Default quantity is 1
                 });
         }
         else
         {
-            // در غیر این صورت تعداد محصول را افزایش می‌دهیم
+            // If the product is already in the cart, increment its count
             cartItem.Count += 1;
         }
 
-        // ذخیره تغییرات در دیتابیس
+        // Save the changes made to the database context asynchronously
         await context.SaveChangesAsync();
 
+        // Set loading state back to false as the operation is complete
         loading = false;
     }
 
+    // Asynchronous method to retrieve the ID of the currently authenticated user
     private async Task<int> GetUserIdAsync()
     {
+        // Get the current authentication state
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // Get the user principal from the authentication state
         var user = authState.User;
 
+        // Check if the user is authenticated
         if (user.Identity?.IsAuthenticated == true)
         {
-            var userId = (int)int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            return userId;
+            // Find the NameIdentifier claim (usually contains the user ID)
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Parse the user ID claim to an integer and return it
+            if (int.TryParse(userIdClaim, out int userId))
+            {
+                return userId;
+            }
         }
+        // Return 0 if the user is not authenticated or the ID cannot be parsed
         return 0;
     }
 }
