@@ -1,9 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization // Import necessary namespace for authorization components
-@using System.Security.Claims // Import necessary namespace for handling claims
-@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory // Inject the database context factory for database operations
-@inject AuthenticationStateProvider AuthenticationStateProvider // Inject the authentication state provider to get user authentication status
-@rendermode InteractiveServer // Set the render mode for the component to Interactive Server
-@inject NavigationManager NavigationManager // Inject the navigation manager for handling navigation
+﻿@using Microsoft.AspNetCore.Components.Authorization 
+@using System.Security.Claims 
+@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
 
 <a class="btn btn-primary" disabled="@(loading?"disabled":null)" @onclick="AddToCartAsync" data-tippy="Add To Cart" data-tippy-inertia="true" data-tippy-delay="50" data-tippy-arrow="true" data-tippy-placement="top">
 

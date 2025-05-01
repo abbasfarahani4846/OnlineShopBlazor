@@ -48,7 +48,10 @@
                                             <td>
                                                 <div class="cart_product_price">
                                                     <span>
-                                                        $@item.Price.ToString("F")
+                                                        @{
+                                                            var result = item.Price - item.Discount;
+                                                        }
+                                                        @result.ToString("F")
                                                     </span>
                                                 </div>
                                             </td>
@@ -109,8 +112,10 @@
                 </div>
             </div>
             <!--coupon code area end-->
-        }else{
-            <Alert Color="AlertColor.Secondary"> 
+        }
+        else
+        {
+            <Alert Color="AlertColor.Secondary">
                 Cart is empty
             </Alert>
         }
