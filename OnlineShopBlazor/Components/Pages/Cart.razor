@@ -191,7 +191,7 @@
             if (product == null) return;
 
             // Create a new view model instance with combined cart and product data.
-            result.Add(new CartViewItemViewModel
+            var cartitem = new CartViewItemViewModel
                 {
                     ProductId = product.Id,
                     Title = product.Title,
@@ -199,9 +199,11 @@
                     Price = product.Price ?? 0, // Use null-coalescing operator for default value
                     Discount = product.Discount ?? 0, // Use null-coalescing operator for default value
                     Count = item.Count,
-                    // Calculate the total price for this row (quantity * (price - discount)).
-                    RowSum = item.Count * (product.Price - product.Discount ?? 0)
-                });
+                };
+
+            cartitem.RowSum = cartitem.Count * (cartitem.Price - cartitem.Discount);
+
+            result.Add(cartitem);
         }
         Model = result;
     }
