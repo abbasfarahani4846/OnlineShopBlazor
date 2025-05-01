@@ -181,30 +181,29 @@
                                    .Where(p => productIds.Contains(p.Id)) // Filter by the list of product IDs
                                    .ToListAsync(); // Execute the query asynchronously
 
-        // Map the cart items and product details to the CartViewItemViewModel.
-        Model = cartItems
-            .Select(cart =>
-            {
-                // Find the corresponding product details for the current cart item.
-                var product = products.FirstOrDefault(p => p.Id == cart.ProductId);
-                // If product details are not found (e.g., product deleted), return null.
-                if (product == null) return null;
+        var result = new List<CartViewItemViewModel>();
+        foreach (var item in cartItems)
+        {
+            // Find the corresponding product details for the current cart item.
+            var product = products.FirstOrDefault(p => p.Id == item.ProductId);
 
-                // Create a new view model instance with combined cart and product data.
-                return new CartViewItemViewModel
-                    {
-                        ProductId = product.Id,
-                        Title = product.Title,
-                        ImageName = product.ImageName,
-                        Price = product.Price ?? 0, // Use null-coalescing operator for default value
-                        Discount = product.Discount ?? 0, // Use null-coalescing operator for default value
-                        Count = cart.Count,
-                        // Calculate the total price for this row (quantity * (price - discount)).
-                        RowSum = cart.Count * (product.Price ?? 0 - product.Discount ?? 0)
-                    };
-            })
-            .Where(x => x != null) // Filter out any null entries (where product was not found).
-            .ToList()!; // Convert the result to a List. The '!' suppresses null warning.
+            // If product details are not found (e.g., product deleted), return null.
+            if (product == null) return;
+
+            // Create a new view model instance with combined cart and product data.
+            result.Add(new CartViewItemViewModel
+                {
+                    ProductId = product.Id,
+                    Title = product.Title,
+                    ImageName = product.ImageName,
+                    Price = product.Price ?? 0, // Use null-coalescing operator for default value
+                    Discount = product.Discount ?? 0, // Use null-coalescing operator for default value
+                    Count = item.Count,
+                    // Calculate the total price for this row (quantity * (price - discount)).
+                    RowSum = item.Count * (product.Price - product.Discount ?? 0)
+                });
+        }
+        Model = result;
     }
 
     // Asynchronous method to remove all items from the user's cart.
