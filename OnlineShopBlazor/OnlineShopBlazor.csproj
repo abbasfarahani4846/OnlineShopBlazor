@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Services\" />
     <Folder Include="wwwroot\images\banners\" />
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>

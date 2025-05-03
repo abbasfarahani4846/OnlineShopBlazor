@@ -110,8 +110,17 @@
              }
          }
 
+        window.submitLoginForm = function (username, password) {
+            // ساخت URL با query string (اطلاعات لاگین در URL قرار می‌گیرد)
+            const url = new URL("/LoginHandler", window.location.origin);
+            url.searchParams.append("Username", username);  // اضافه کردن نام کاربری به URL
+            url.searchParams.append("Password", password);  // اضافه کردن رمز عبور به URL
 
-       
+            // ارسال درخواست GET
+            window.location.href = url;  // با استفاده از window.location.href به URL هدایت می‌شویم
+        };
+
+
     </script>
 
     <script src="_framework/blazor.web.js"></script>

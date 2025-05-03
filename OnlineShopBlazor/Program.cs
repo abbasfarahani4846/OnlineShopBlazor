@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using OnlineShopBlazor.Models.Validations;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Authentication;
-using OnlineShopBlazor.Models.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,9 +36,7 @@ builder.Services.AddAuthentication("MyCookieAuth") // Use a specific scheme name
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<LoginService>();
-
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -57,6 +54,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+app.UseAuthentication();     // اضافه کن
+app.UseAuthorization();      // اضافه کن
+
+
+app.MapRazorPages(); // حتماً باید باشه!
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

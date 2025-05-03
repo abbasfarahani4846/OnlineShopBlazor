@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@using OnlineShopBlazor.Models.Services
 @inherits LayoutComponentBase
 @inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory
 @inject NavigationManager NavigationManager
@@ -107,7 +106,7 @@
                                                 <li><a href="/user">My Account</a></li>
                                                 <li><a href="/User/Orders">Order list</a></li>
                                                 <li>
-                                                    <a href="/logout">Logout</a>
+                                                    <a href="/logoutHandler">Logout</a>
                                                 </li>
                                             </ul>
                                         </Authorized>

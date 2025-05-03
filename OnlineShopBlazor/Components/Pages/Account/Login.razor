@@ -2,7 +2,6 @@
 @using FluentValidation
 @using Blazored.FluentValidation
 @using Microsoft.AspNetCore.Authentication.Cookies
-@using OnlineShopBlazor.Models.Services
 @using OnlineShopBlazor.Models.Validations
 @using OnlineShopBlazor.Models.ViewModels
 @using System.Security.Claims
@@ -10,8 +9,10 @@
 
 @inject NavigationManager NavigationManager
 @inject IValidator<LoginViewModel> Validator
-@inject LoginService _loginService
+@inject IDbContextFactory<OnlineShopBlazor.Models.Db.OnlineShopOrginalContext> DbFactory
 
+@inject IJSRuntime JS
+@rendermode InteractiveServer
 
 <div class="row justify-content-center" style="margin-top: 200px;">
     <div class="col-md-6 col-lg-5">
@@ -49,8 +50,17 @@
 
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            Login
+                        <button type="submit" class="btn btn-primary" disabled="@(loading?"disabled":null)">
+                            @if (loading)
+                            {
+                                <Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Light" />
+                            }
+                            else
+                            {
+                                <span>
+                                   Login
+                                </span>
+                            }
                         </button>
                     </div>
                 </EditForm>
@@ -62,27 +72,30 @@
     </div>
 </div>
 
-<Preload />
 @code {
     // Use the User model directly for binding
     [SupplyParameterFromForm]
     public LoginViewModel LoginModel { get; set; } = new();
-    [Inject]
-    protected PreloadService PreloadService { get; set; } = default!;
+
     private string? _errorMessage = null;
+    private bool loading = false;
 
     private async Task HandleValidSubmit()
     {
+        loading = true;
+        await Task.Delay(1500);
 
-        bool success = await _loginService.LoginAsync(LoginModel.Email, LoginModel.Password);
+        using var _context = DbFactory.CreateDbContext();
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == LoginModel.Email.ToLower().Trim() && x.Password == LoginModel.Password.Trim());
 
-        if (success)
+        if (user != null)
         {
-            NavigationManager.NavigateTo("/");
+            await JS.InvokeVoidAsync("submitLoginForm", LoginModel.Email, LoginModel.Password);
         }
         else
         {
             _errorMessage = "Invalid username or password.";
+            loading = false;
         }
 
     }
