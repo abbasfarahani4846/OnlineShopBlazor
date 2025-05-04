@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
+<CascadingAuthenticationState>
+<AuthorizeView>
+    <Authorized>
+        <a href="#">
+            <i class="icon-user icons text-danger"></i>
+        </a>
+        <ul class="dropdown_account_link">
+            <li><a href="/user">My Account</a></li>
+            <li><a href="/User/Orders">Order list</a></li>
+            <li>
+                <a @onclick="async () => await RedirectToLogout()">Logout</a>
+            </li>
+        </ul>
+    </Authorized>
+    <NotAuthorized>
+        <a href="#">
+            <i class="icon-user icons"></i>
+        </a>
+        <ul class="dropdown_account_link">
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        </ul>
+    </NotAuthorized>
+</AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private async Task RedirectToLogout(){
+        await JS.InvokeVoidAsync("logout");
+    }
+}

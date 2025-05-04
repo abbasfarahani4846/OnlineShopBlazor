@@ -9,7 +9,7 @@ namespace OnlineShopBlazor.Pages
         public async Task<IActionResult> OnGet()
         {
             await HttpContext.SignOutAsync("MyCookieAuth");
-
+           
             return Redirect("/login");
         }
     }

@@ -24,24 +24,17 @@ namespace OnlineShopBlazor.Pages
         public string Password { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
-            // دریافت اطلاعات از query string
+            // Retrieve information from query string
             Username = Request.Query["Username"];
             Password = Request.Query["Password"];
 
-            // اعتبارسنجی ورودی‌ها
-            if (string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password))
-            {
-                TempData["ErrorMessage"] = "نام کاربری و رمز عبور الزامی است.";
-                return Page();
-            }
-
-            // جستجو برای کاربر در دیتابیس
+            // Search for the user in the database
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.Email == Username.ToLower().Trim() && x.Password == Password.Trim());
 
             if (user != null)
             {
-                // ایجاد claims برای لاگین
+                // Create claims for login
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.FullName),
@@ -51,21 +44,20 @@ namespace OnlineShopBlazor.Pages
         };
 
                 var claimsIdentity = new ClaimsIdentity(
-                    claims, "MyCookieAuth"); // تغییر به MyCookieAuth به جای Cookies
+                    claims, "MyCookieAuth"); // Use MyCookieAuth instead of default Cookies
 
-                // ورود به سیستم با استفاده از کوکی‌ها
+                // Sign in using cookies
                 await HttpContext.SignInAsync(
-                    "MyCookieAuth", // تغییر به MyCookieAuth
+                    "MyCookieAuth", // Use MyCookieAuth
                     new ClaimsPrincipal(claimsIdentity)
                 );
 
-                // هدایت به صفحه اصلی بعد از ورود موفق
+                // Redirect to homepage after successful login
                 return Redirect("/");
             }
 
-            // اگر کاربر پیدا نشد، نمایش پیام خطا
-            TempData["ErrorMessage"] = "نام کاربری یا رمز عبور اشتباه است.";
-            return Page();
+            // Redirect to login page if authentication fails
+            return Redirect("/login");
         }
 
     }
