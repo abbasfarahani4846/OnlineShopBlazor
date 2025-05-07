@@ -1,0 +1,136 @@
+﻿@page "/ReturnPeyment"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using OnlineShopBlazor.Models.Services
+@using OnlineShopBlazor.Models.ViewModels
+@using System.Security.Claims
+@using PayPal.Api
+@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<div class="container" style="margin-top:200px">
+    @if (IsLoading)
+    {
+        <div class="col text-center">
+            <Spinner Color="SpinnerColor.Primary" />
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger text-center" role="alert">
+                @ErrorMessage
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-success text-center fs-5 " role="alert">
+                Payment success
+                <br />
+                <a href="/Order?@OrderId" class="btn btn-primary mt-4">
+                    See order details
+                </a>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int OrderId { get; set; }
+
+    [SupplyParameterFromQuery]
+    private string PayerId { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string paymentId { get; set; }
+
+    public string ErrorMessage { get; set; } = "";
+    public bool IsLoading { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ProcessPaymentAsync();
+            StateHasChanged(); // برای رفرش صفحه بعد از بارگذاری
+        }
+    }
+
+    private async Task ProcessPaymentAsync()
+    {
+        using var _context = DbContextFactory.CreateDbContext();
+
+        var order = await _context.Orders.FirstOrDefaultAsync(x => x.Id == OrderId);
+        if (order == null)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var clientId = "AbmXgDjJF3Wzy45yywNrh1VSCpVy-wCBr1to0lkwJfKDX_SEgKCDZkdi1VKl4cSUDWEf8BydFPuKIxFb";
+        var clientSecret = "EH8i27p_WfDe02nj0_muuesMeVtOqbEUQIxrl23bTRTRU2b06dep6Mrxa14Bcm85wZYilQODEghrOVda";
+        var mode = "sandbox";
+        var apiContext = PaypalConfiguration.GetAPIContext(clientId, clientSecret, mode);
+        var paymentExecution = new PaymentExecution { payer_id = PayerId };
+        var payment = new Payment { id = paymentId };
+
+        try
+        {
+            var executedPayment = payment.Execute(apiContext, paymentExecution);
+
+            if (executedPayment.state.ToLower() != "approved")
+            {
+                ErrorMessage = "Payment error. try again";
+                IsLoading = false;
+                return;
+            }
+
+            var userId = await GetUserIdAsync();
+            var userCart = await _context.Carts.Where(x => x.UserId == userId).ToListAsync();
+            _context.Carts.RemoveRange(userCart);
+
+            order.TransId = executedPayment.transactions[0].related_resources[0].sale.id;
+            order.Status = executedPayment.state.ToLower();
+
+            var orderDetails = _context.OrderDetails.Where(x => x.OrderId == OrderId).ToList();
+            var productsIds = orderDetails.Select(x => x.ProductId);
+            var products = _context.Products.Where(x => productsIds.Contains(x.Id)).ToList();
+
+            foreach (var item in products)
+            {
+                item.Qty -= orderDetails.FirstOrDefault(x => x.ProductId == item.Id).Count;
+            }
+
+            _context.Products.UpdateRange(products);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = "Payment error. try again: " + e.Message;
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task<int> GetUserIdAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(userIdClaim, out int userId))
+            {
+                return userId;
+            }
+        }
+
+        return 0;
+    }
+}

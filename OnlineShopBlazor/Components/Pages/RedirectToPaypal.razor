@@ -1,0 +1,90 @@
+﻿@page "/RedirectToPaypal"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using OnlineShopBlazor.Models.Services
+@using OnlineShopBlazor.Models.ViewModels
+@using System.Security.Claims
+@using PayPal.Api
+@inject IDbContextFactory<OnlineShopOrginalContext> DbContextFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+
+
+@code {
+    [SupplyParameterFromQuery]
+    private int OrderId { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (OrderId == 0)
+        {
+            NavigationManager.NavigateTo("/Cart");
+        }
+
+        await RedirectHandle();
+    }
+
+    private async Task RedirectHandle()
+    {
+        using var _context = DbContextFactory.CreateDbContext();
+
+        var order = await _context.Orders.FirstOrDefaultAsync(x => x.Id == OrderId);
+        if (order == null)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        var orderDetails = _context.OrderDetails.Where(x => x.OrderId == OrderId).ToList();
+
+        var clientId = "AbmXgDjJF3Wzy45yywNrh1VSCpVy-wCBr1to0lkwJfKDX_SEgKCDZkdi1VKl4cSUDWEf8BydFPuKIxFb";
+        var clientSecret = "EH8i27p_WfDe02nj0_muuesMeVtOqbEUQIxrl23bTRTRU2b06dep6Mrxa14Bcm85wZYilQODEghrOVda";
+        var mode = "sandbox";
+        var apiContext = PaypalConfiguration.GetAPIContext(clientId, clientSecret, mode);
+
+
+        string baseURI = $"{NavigationManager.BaseUri}ReturnPeyment?";
+        var guid = Guid.NewGuid().ToString();
+
+        var payment = new Payment
+            {
+                intent = "sale",
+                payer = new Payer { payment_method = "paypal" },
+                transactions = new List<Transaction>
+                    {
+                        new Transaction
+                        {
+                            description = $"Order {order.Id}",
+                            invoice_number = Guid.NewGuid().ToString(),
+                            amount = new Amount
+                            {
+                                currency = "USD",
+                                total = order.Total?.ToString("F"),
+                            },
+                        }
+                    },
+                redirect_urls = new RedirectUrls
+                {
+                    cancel_url = $"{baseURI}&Cancel=true",
+                    return_url = $"{baseURI}orderId={order.Id}"
+                }
+            };
+
+
+        var createdPayment = payment.Create(apiContext);
+        var approvalUrl = createdPayment.links.FirstOrDefault(l => l.rel.ToLower() == "approval_url")?.href;
+
+        if (!string.IsNullOrEmpty(approvalUrl))
+        {
+            NavigationManager.NavigateTo(approvalUrl);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}
