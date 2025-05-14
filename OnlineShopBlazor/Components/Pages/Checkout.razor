@@ -26,6 +26,9 @@
                         <div class="checkout_form_input">
                             <label for="country">country <span>*</span></label>
                             <InputSelect @bind-Value="Order.Country" class="form-control w-100" id="country">
+                                <option>
+                                    Select your country
+                                </option>
                                 <option value="United Kingdom (UK)">United Kingdom (UK) </option>
                                 <option value="Algeria">Algeria</option>
                                 <option value="Afghanistan">Afghanistan</option>
@@ -35,6 +38,7 @@
                                 <option value="Colombia">Colombia</option>
                                 <option value="Dominican Republic">Dominican Republic</option>
                             </InputSelect>
+                            <ValidationMessage For="() => Order.Country" class="text-danger" />
                         </div>
                         <div class="checkout_form_input">
                             <label>First Name <span>*</span></label>
@@ -186,7 +190,7 @@
                                             else
                                             {
                                                 <span>
-                                                    Apply coupon
+                                                    Apply
                                                 </span>
                                             }
                                         </button>
