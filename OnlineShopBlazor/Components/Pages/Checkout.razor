@@ -15,12 +15,12 @@
 <!--Checkout page section-->
 <div class="checkout_section" id="accordion" style="margin-top:200px">
     <div class="container">
-        <EditForm method="post" Model="Order" OnValidSubmit="SubmitOrder" Enhance>
-            <FluentValidationValidator Validator="Validator" />
 
-            <div class="checkout_form">
-                <div class="row">
-                    <div class="col-lg-7 col-md-6">
+        <div class="checkout_form">
+            <div class="row">
+                <div class="col-lg-7 col-md-6">
+                    <EditForm method="post" Model="Order" OnValidSubmit="SubmitOrder" Enhance>
+                        <FluentValidationValidator Validator="Validator" />
 
                         <h3>Billing Details</h3>
                         <div class="checkout_form_input">
@@ -95,120 +95,122 @@
                                 }
                             </button>
                         </div>
-                    </div>
-                    <div class="col-lg-5 col-md-6">
-                        <div class="order_table_right">
-                            <h3>Your order</h3>
-                            <div class="order_table table-responsive">
-                                <table>
-                                    <thead>
+
+                    </EditForm>
+                </div>
+                <div class="col-lg-5 col-md-6">
+                    <div class="order_table_right">
+                        <h3>Your order</h3>
+                        <div class="order_table table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th class="text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Products)
+                                    {
                                         <tr>
-                                            <th>Product</th>
-                                            <th class="text-right">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in Products)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @item.Title
-                                                </td>
-                                                <td>
-                                                    $@item.RowSum.ToString("F")
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td>Cart Subtotal </td>
-                                            <td class="text-right">
-                                                $@Products.Sum(x => x.RowSum).ToString("F")
+                                            <td>
+                                                @item.Title
+                                            </td>
+                                            <td>
+                                                $@item.RowSum.ToString("F")
                                             </td>
                                         </tr>
-                                        @if (Order.Shipping != null)
-                                        {
-                                            <tr>
-                                                <td>Shipping </td>
-                                                <td class="text-right">$@Order.Shipping?.ToString("F")</td>
-                                            </tr>
-                                        }
-
-                                        @if (!string.IsNullOrEmpty(Order.CouponCode))
-                                        {
-                                            <tr>
-                                                <td>
-                                                    Discount - &nbsp; @Order.CouponCode &nbsp; &nbsp;
-                                                    <a @onclick="RemoveCoupon">
-                                                        <i class="ion-android-close"></i>
-                                                    </a>
-                                                </td>
-                                                <td class="text-right">
-                                                    $@Order.CouponDiscount?.ToString("F")
-                                                </td>
-                                            </tr>
-                                        }
-
-                                        <tr class="order_total">
-                                            <th>Order Total</th>
-                                            @{
-                                                var orderTotal = (Products.Sum(x => x.RowSum) + Order.Shipping);
-                                                if (Order.CouponDiscount != null)
-                                                {
-                                                    orderTotal -= Order.CouponDiscount;
-                                                }
-                                            }
-                                            <td class="text-right">$@orderTotal?.ToString("F")</td>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td>Cart Subtotal </td>
+                                        <td class="text-right">
+                                            $@Products.Sum(x => x.RowSum).ToString("F")
+                                        </td>
+                                    </tr>
+                                    @if (Order.Shipping != null)
+                                    {
+                                        <tr>
+                                            <td>Shipping </td>
+                                            <td class="text-right">$@Order.Shipping?.ToString("F")</td>
                                         </tr>
-                                    </tfoot>
-                                </table>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(Order.CouponCode))
+                                    {
+                                        <tr>
+                                            <td>
+                                                Discount - &nbsp; @Order.CouponCode &nbsp; &nbsp;
+                                                <a @onclick="RemoveCoupon">
+                                                    <i class="ion-android-close"></i>
+                                                </a>
+                                            </td>
+                                            <td class="text-right">
+                                                $@Order.CouponDiscount?.ToString("F")
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    <tr class="order_total">
+                                        <th>Order Total</th>
+                                        @{
+                                            var orderTotal = (Products.Sum(x => x.RowSum) + Order.Shipping);
+                                            if (Order.CouponDiscount != null)
+                                            {
+                                                orderTotal -= Order.CouponDiscount;
+                                            }
+                                        }
+                                        <td class="text-right">$@orderTotal?.ToString("F")</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 pe-2 ps-3">
+                        @if (!string.IsNullOrEmpty(Order.CouponCode))
+                        {
+                            <div class="alert alert-success" role="alert">
+                                Coupon successfully applied
                             </div>
 
-                        </div>
-
-                        <div class="col-12 pe-2 ps-3">
-                            @if (!string.IsNullOrEmpty(Order.CouponCode))
-                            {
-                                <div class="alert alert-success" role="alert">
-                                    Coupon successfully applied
+                        }
+                        else
+                        {
+                            <div class="checkout_info coupon_info row">
+                                <div class="col-8">
+                                    <input placeholder="Coupon code" @bind-value="CouponCode" class="form-control" type="text" name="couponCode">
                                 </div>
-
-                            }
-                            else
-                            {
-                                <div class="checkout_info coupon_info row">
-                                    <div class="col-8">
-                                        <input placeholder="Coupon code" @bind-value="CouponCode" class="form-control" type="text" name="couponCode">
-                                    </div>
-                                    <div class="col-4">
-                                        <button type="submit" class="btn btn-primary btn-block w-100" disabled="@(IsLoading?"disabled":null)" @onclick="async()=>await ApplyCoupon()">
-                                            @if (IsLoading)
-                                            {
-                                                <Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Light" />
-                                            }
-                                            else
-                                            {
-                                                <span>
-                                                    Apply
-                                                </span>
-                                            }
-                                        </button>
-                                    </div>
-                                    <br />
-                                    @if (!string.IsNullOrEmpty(ErrorMessage))
-                                    {
-                                        <div class="alert alert-danger" role="alert">
-                                            @ErrorMessage
-                                        </div>
-                                    }
+                                <div class="col-4">
+                                    <button type="submit" class="btn btn-primary btn-block w-100" disabled="@(IsLoading?"disabled":null)" @onclick="async()=>await ApplyCoupon()">
+                                        @if (IsLoading)
+                                        {
+                                            <Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Light" />
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                Apply
+                                            </span>
+                                        }
+                                    </button>
                                 </div>
-                            }
-                        </div>
+                                <br />
+                                @if (!string.IsNullOrEmpty(ErrorMessage))
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @ErrorMessage
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
-        </EditForm>
+        </div>
+
     </div>
 </div>
 <!--Checkout page section end-->
