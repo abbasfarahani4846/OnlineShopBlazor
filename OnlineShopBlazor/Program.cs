@@ -51,16 +51,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+
 app.UseAntiforgery();
 
-app.UseAuthentication();     // اضافه کن
-app.UseAuthorization();      // اضافه کن
-
-
-app.MapRazorPages(); // حتماً باید باشه!
-
+app.UseStaticFiles();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
+//-------------run razor pages-------------------
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapRazorPages();
+//-----------------------------------------------
 app.Run();

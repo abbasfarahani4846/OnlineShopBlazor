@@ -10,7 +10,7 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 @attribute [Authorize]
-
+@inject IConfiguration _configuration
 
 
 @code {
@@ -41,9 +41,9 @@
 
         var orderDetails = _context.OrderDetails.Where(x => x.OrderId == OrderId).ToList();
 
-        var clientId = "AbmXgDjJF3Wzy45yywNrh1VSCpVy-wCBr1to0lkwJfKDX_SEgKCDZkdi1VKl4cSUDWEf8BydFPuKIxFb";
-        var clientSecret = "EH8i27p_WfDe02nj0_muuesMeVtOqbEUQIxrl23bTRTRU2b06dep6Mrxa14Bcm85wZYilQODEghrOVda";
-        var mode = "sandbox";
+        var clientId = _configuration.GetValue<string>("PayPal:Key");
+        var clientSecret = _configuration.GetValue<string>("PayPal:Secret");
+        var mode = _configuration.GetValue<string>("PayPal:mode");
         var apiContext = PaypalConfiguration.GetAPIContext(clientId, clientSecret, mode);
 
 
