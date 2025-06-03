@@ -51,6 +51,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAntiforgery();
 
@@ -58,8 +60,7 @@ app.UseStaticFiles();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 //-------------run razor pages-------------------
-app.UseAuthentication();
-app.UseAuthorization();
+
 app.MapRazorPages();
 //-----------------------------------------------
 app.Run();
