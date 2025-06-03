@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\OrderPages\" />
     <Folder Include="wwwroot\images\banners\" />
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>

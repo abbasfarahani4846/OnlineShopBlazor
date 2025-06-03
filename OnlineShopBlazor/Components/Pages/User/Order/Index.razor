@@ -1,0 +1,96 @@
+﻿@page "/user/orders"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using OnlineShopBlazor.Models.Db
+@using System.Security.Claims
+@implements IAsyncDisposable
+@inject IDbContextFactory<OnlineShopOrginalContext> DbFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>
+    My orders
+</PageTitle>
+
+<div class="container" style="margin-top:200px">
+
+    @if (orders is null)
+    {
+        // Show loading spinner while data is loading
+        <Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Light" />
+    }
+    else if (!orders.Any())
+    {
+        // If there are no orders for the user
+        <p>
+            No Order
+        </p>
+    }
+    else
+    {
+        // Display the orders in a QuickGrid table
+        <QuickGrid Class="table" Items="orders">
+            <!-- Show order ID -->
+            <PropertyColumn Property="order => order.Id" />
+            <!-- Show total amount -->
+            <PropertyColumn Property="order => order.Total" />
+            <!-- Show creation date -->
+            <PropertyColumn Property="order => order.CreateDate" />
+            <!-- Show transaction ID -->
+            <PropertyColumn Property="order => order.TransId" />
+            <!-- Show status -->
+            <PropertyColumn Property="order => order.Status" />
+
+            <!-- Custom column with a link to the details page -->
+            <TemplateColumn Context="order">
+                <a href="@($"orders/details?id={order.Id}")">
+                    Details
+                </a>
+            </TemplateColumn>
+        </QuickGrid>
+    }
+</div>
+
+@code {
+    private OnlineShopOrginalContext context = default!; // Database context instance
+    private IQueryable<Order> orders; // List of orders belonging to the current user
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a new database context instance
+        context = DbFactory.CreateDbContext();
+        var userId = await GetUserIdAsync();
+
+        if (userId > 0)
+        {
+            // Load all orders that belong to the logged-in user
+            orders = context.Orders
+                .Where(o => o.UserId == userId);
+        }
+    }
+
+    private async Task<int> GetUserIdAsync()
+    {
+        // Get the currently authenticated user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            // Try to extract and parse the user ID from claims
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(userIdClaim, out int parsedUserId))
+            {
+                return parsedUserId;
+            }
+        }
+
+        // Return 0 if user is not authenticated or user ID is invalid
+        return 0;
+    }
+
+    public async ValueTask DisposeAsync()
+        => await context.DisposeAsync(); // Dispose of the database context when the component is disposed
+}
