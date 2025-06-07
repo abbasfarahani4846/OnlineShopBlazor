@@ -33,6 +33,7 @@ builder.Services.AddAuthentication("MyCookieAuth") // Use a specific scheme name
         options.Cookie.Name = "OnlineShop.Auth";
         options.LoginPath = "/login"; // Page users are sent to when they need to log in
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Cookie expiration
+        options.AccessDeniedPath = "/login";
     });
 
 builder.Services.AddAuthorization();
