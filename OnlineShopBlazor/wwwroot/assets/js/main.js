@@ -97,14 +97,14 @@
     
     
     
-    /*---canvas menu activation---*/
-    $('.canvas_open').on('click', function(){
-        $('.offcanvas_menu_wrapper,.body_overlay').addClass('active')
-    });
+    ///*---canvas menu activation---*/
+    //$('.canvas_open').on('click', function(){
+    //    $('.offcanvas_menu_wrapper,.body_overlay').addClass('active')
+    //});
     
-    $('.canvas_close,.body_overlay').on('click', function(){
-        $('.offcanvas_menu_wrapper,.body_overlay').removeClass('active')
-    });
+    //$('.canvas_close,.body_overlay').on('click', function(){
+    //    $('.offcanvas_menu_wrapper,.body_overlay').removeClass('active')
+    //});
     
     
     //Shopping Cart addClass removeClass

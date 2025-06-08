@@ -32,8 +32,9 @@
         .carousel-control-prev span, .carousel-control-next span {
             background-color: gray;
         }
-        .carousel-control-next, .carousel-control-prev{
-            width:auto;
+
+        .carousel-control-next, .carousel-control-prev {
+            width: auto;
         }
     </style>
     <HeadOutlet />
@@ -115,22 +116,34 @@
 
         window.submitLoginForm = function (username, password) {
             const url = new URL("/LoginHandler", window.location.origin);
-            url.searchParams.append("Username", username); 
-            url.searchParams.append("Password", password); 
+            url.searchParams.append("Username", username);
+            url.searchParams.append("Password", password);
 
 
-            window.location.href = url; 
+            window.location.href = url;
         };
 
         window.logout = function () {
             const url = new URL("/LogoutHandler", window.location.origin);
 
-            window.location.href = url;  
+            window.location.href = url;
         };
 
+                /*---canvas menu activation---*/
+        // $('.canvas_open').on('click', function(){
+        //     $('.offcanvas_menu_wrapper,.body_overlay').addClass('active')
+        // });
 
+        // $('.canvas_close,.body_overlay').on('click', function(){
+        //     $('.offcanvas_menu_wrapper,.body_overlay').removeClass('active')
+        // });
 
-
+        function canvasOpen(){
+            $('.offcanvas_menu_wrapper,.body_overlay').addClass('active')
+        }
+          function canvasClose(){
+              $('.offcanvas_menu_wrapper,.body_overlay').removeClass('active')
+        }
 
     </script>
 
